@@ -13,7 +13,7 @@ while read -u 9 line; do
 
   date_regex='[0-9]+(:[0-9]{2}){2}\s+[0-9]{2}(:[0-9]{2}){2}'
   sdate=$(exiftool -datetimeoriginal "$sfile" | grep -oP "$date_regex")
-  gdate=$(exiftool -filemodifydate "$gfile" | grep -oP "$date_regex")
+  gdate=$(exiftool -datetimeoriginal "$gfile" | grep -oP "$date_regex")
   if [[ "$gdate" != "" && "$sdate" != "" ]]; then
     if [[ "$gdate" < "$sdate" ]]; then
       dates_file=$gfile

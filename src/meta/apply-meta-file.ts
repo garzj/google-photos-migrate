@@ -44,6 +44,7 @@ export async function applyMetaFile(
       tags.ModifyDate = timeModified?.toISOString();
       break;
     case MetaType.QUICKTIME:
+      tags.DateTimeOriginal = timeTaken.toISOString();
       tags.TrackCreateDate = timeTaken.toISOString();
       tags.TrackModifyDate = timeModified?.toISOString();
       tags.MediaCreateDate = timeTaken.toISOString();
