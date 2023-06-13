@@ -144,6 +144,7 @@ async function saveToDir(
 
   if (move) {
     await rename(file, savePath);
+    knownFiles.delete(file);
   } else {
     await copyFile(file, savePath);
   }
