@@ -1,4 +1,4 @@
-import { MetaType } from './meta';
+import { MetaType } from './MetaType';
 
 export interface MediaFileExtension {
   suffix: string;
@@ -13,7 +13,7 @@ export const supportedExtensions: MediaFileExtension[] = [
   { suffix: '.raw', metaType: MetaType.NONE },
   { suffix: '.ico', metaType: MetaType.NONE },
   { suffix: '.tiff', metaType: MetaType.EXIF },
-  { suffix: '.webp', metaType: MetaType.RIFF },
+  { suffix: '.webp', metaType: MetaType.EXIF }, // actually RIFF, can only write EXIF
   { suffix: '.heic', metaType: MetaType.QUICKTIME },
   { suffix: '.heif', metaType: MetaType.QUICKTIME },
   { suffix: '.gif', metaType: MetaType.NONE },

@@ -4,9 +4,9 @@
   "description": "",
   "main": "./build/index.js",
   "scripts": {
-    "build": "npx tsc -p .",
+    "build": "npx tsc -p . --skipLibCheck",
     "start": "node ./build/cli.js",
-    "deploy": "npm run build && npm start",
+    "deploy": "npm run build && npm start --",
     "dev": "export NODE_ENV=development || set NODE_ENV=development&& npx ts-node-dev --respawn ./src/cli.ts"
   },
   "author": "Johannes Garz <jojogarz123@gmail.com> (https://www.garz.dev/)",
