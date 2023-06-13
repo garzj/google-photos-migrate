@@ -72,7 +72,7 @@ const app = command({
       (res) => res instanceof MediaMigrationError
     ).length;
     const sucCount = results.length - errCount;
-    console.log(`Done! Saved ${results.length} files.`);
+    console.log(`Done! Processed ${results.length} files.`);
     console.log(`Files migrated: ${sucCount}`);
     console.log(`Files failed: ${errCount}`);
   },
