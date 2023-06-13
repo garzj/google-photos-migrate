@@ -40,11 +40,12 @@ bash ./fix-dates.sh
 # Compare by size and generate lists for deletion
 bash ./gen-file-list.sh
 
+# Check the generated files, make sure no data gets lost
+
 # Find files that should be reuploaded to the phone, cause they changed and won't be deleted
 diff <(grep -E '^\./storage/emulated/0' ./fixed_date_files.txt) ./duplicate_deletion_phone.txt --old-line-format='%L' --unchanged-line-format='' --new-line-format='' > reupload_files.txt
+# Upload them
 xargs -a ./reupload_files.txt -L1 -I {} adb push {} {}
-
-# Check the generated files, make sure no data gets lost
 
 # Delete images from my phone
 # ! Make sure there are no filenames that include newlines
