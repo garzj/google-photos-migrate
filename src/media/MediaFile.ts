@@ -1,8 +1,10 @@
 import { MediaFileExtension } from './MediaFileExtension';
 
-export interface MediaFile {
-  ext: MediaFileExtension;
-  path: string;
+export interface MediaFileInfo {
   originalPath: string;
-  jsonPath: string;
+  path: string;
+  ext?: MediaFileExtension;
+  jsonPath?: string;
 }
+
+export type MediaFile = Required<MediaFileInfo>;

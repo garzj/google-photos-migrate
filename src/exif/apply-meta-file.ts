@@ -4,17 +4,22 @@ import { exhaustiveCheck } from '../ts';
 import { MetaType } from '../media/MetaType';
 import { readFile } from 'fs/promises';
 import { GoogleMetadata } from './GoogleMeta';
-import { ExifWrongExtensionError } from './errors';
+import {
+  ApplyMetaError,
+  ExifToolError,
+  MissingMetaError,
+  WrongExtensionError,
+} from './apply-meta-errors';
 
-export async function applyJsonMeta(
+export async function applyMetaFile(
   mediaFile: MediaFile
-): Promise<Error | null> {
+): Promise<ApplyMetaError | null> {
   const metaJson = (await readFile(mediaFile.jsonPath)).toString();
   const meta: GoogleMetadata | undefined = JSON.parse(metaJson);
 
   const timeTakenTimestamp = meta?.photoTakenTime?.timestamp;
   if (timeTakenTimestamp === undefined)
-    return new Error('Coud not read time taken from json file.');
+    return new MissingMetaError(mediaFile, 'photoTakenTime');
   const timeTaken = new Date(parseInt(timeTakenTimestamp) * 1000);
 
   // const timeCreatedTimestamp = meta?.creationTime?.timestamp;
@@ -60,14 +65,15 @@ export async function applyJsonMeta(
       const expected = wrongExtMatch?.groups?.['expected'];
       const actual = wrongExtMatch?.groups?.['actual'];
       if (expected !== undefined && actual !== undefined) {
-        return new ExifWrongExtensionError(
+        return new WrongExtensionError(
+          mediaFile,
           `.${expected.toLowerCase()}`,
           `.${actual.toLowerCase()}`
         );
       }
-      return e;
+      return new ExifToolError(mediaFile, e);
     }
-    return new Error(`${e}`);
+    return new ExifToolError(mediaFile, new Error(`${e}`));
   }
 
   return null;

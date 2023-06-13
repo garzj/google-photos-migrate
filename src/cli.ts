@@ -2,6 +2,7 @@ import { existsSync } from 'fs';
 import { command, run, string, positional, flag } from 'cmd-ts';
 import { migrateGoogleDir } from './media/migrate-google-dir';
 import { isEmptyDir } from './fs/is-empty-dir';
+import { MediaMigrationError } from './media/MediaMigrationError';
 
 const app = command({
   name: 'google-photos-migrate',
@@ -61,8 +62,19 @@ const app = command({
     }
 
     console.log(`Started migration.`);
-    const res = await migrateGoogleDir(googleDir, outputDir, errorDir, true);
-    console.log(`Done! Copied ${res.filter((p) => p !== null).length} files.`);
+    const results = await migrateGoogleDir(
+      googleDir,
+      outputDir,
+      errorDir,
+      true
+    );
+    const errCount = results.filter(
+      (res) => res instanceof MediaMigrationError
+    ).length;
+    const sucCount = results.length - errCount;
+    console.log(`Done! Saved ${results.length} files.`);
+    console.log(`Files migrated: ${sucCount}`);
+    console.log(`Files failed: ${errCount}`);
   },
 });
 

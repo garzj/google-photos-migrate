@@ -1,13 +1,16 @@
 import { copyFile, mkdir, rename } from 'fs/promises';
 import { walkDir } from '../fs/walk-dir';
 import { basename, resolve } from 'path';
-import { findJsonFile } from './find-json-file';
+import { findMetaFile } from '../exif/find-meta-file';
 import { MediaFileExtension } from './MediaFileExtension';
-import { MediaFile } from './MediaFile';
-import { applyJsonMeta } from '../exif/apply-json-meta';
+import { MediaFile, MediaFileInfo } from './MediaFile';
+import { applyMetaFile } from '../exif/apply-meta-file';
 import { indexJsonFiles } from './title-json-map';
-import { ExifWrongExtensionError } from '../exif/errors';
 import { supportedExtensions } from '../config/extensions';
+import { MediaMigrationError } from './MediaMigrationError';
+import { InvalidExtError } from './InvalidExtError';
+import { NoMetaFileError } from './NoMetaFileError';
+import { ExifToolError, WrongExtensionError } from '../exif/apply-meta-errors';
 
 export interface MigrationContext {
   googleDir: string;
@@ -23,7 +26,7 @@ export async function migrateGoogleDir(
   outputDir: string,
   errorDir: string,
   log = false
-): Promise<(string | null)[]> {
+): Promise<(MediaFile | MediaMigrationError)[]> {
   const migCtx: MigrationContext = {
     googleDir,
     outputDir,
@@ -33,22 +36,31 @@ export async function migrateGoogleDir(
     log,
   };
 
-  const wg: Promise<string | null>[] = [];
+  const wg: ReturnType<typeof migrateMediaFile>[] = [];
   for await (const mediaPath of walkDir(googleDir)) {
     wg.push(migrateMediaFile(mediaPath, migCtx));
   }
-  return await Promise.all(wg);
+  const results = await Promise.all(wg);
+  return results.filter((res) => res !== null) as Exclude<
+    (typeof results)[number],
+    null
+  >[];
 }
 
 async function migrateMediaFile(
-  mediaPath: string,
+  originalPath: string,
   migCtx: MigrationContext
-): Promise<string | null> {
-  if (mediaPath.endsWith('.json')) return null;
+): Promise<MediaFile | MediaMigrationError | null> {
+  if (originalPath.endsWith('.json')) return null;
+
+  const mediaFileInfo: MediaFileInfo = {
+    originalPath,
+    path: originalPath,
+  };
 
   const ext = supportedExtensions.reduce<MediaFileExtension | null>(
     (longestMatch, cur) => {
-      if (!mediaPath.endsWith(cur.suffix)) return longestMatch;
+      if (!originalPath.endsWith(cur.suffix)) return longestMatch;
       if (longestMatch === null) return cur;
       return cur.suffix.length > longestMatch.suffix.length
         ? cur
@@ -57,31 +69,41 @@ async function migrateMediaFile(
     null
   );
   if (!ext) {
-    return await saveToDir(mediaPath, migCtx.errorDir, migCtx.migratedFiles);
+    mediaFileInfo.path = await saveToDir(
+      originalPath,
+      migCtx.errorDir,
+      migCtx.migratedFiles
+    );
+    return new InvalidExtError(mediaFileInfo);
   }
 
-  const jsonPath = await findJsonFile(mediaPath, ext, migCtx);
+  const jsonPath = await findMetaFile(originalPath, ext, migCtx);
   if (!jsonPath) {
-    return await saveToDir(mediaPath, migCtx.errorDir, migCtx.migratedFiles);
+    mediaFileInfo.path = await saveToDir(
+      originalPath,
+      migCtx.errorDir,
+      migCtx.migratedFiles
+    );
+    return new NoMetaFileError(mediaFileInfo);
   }
 
   const savedPath = await saveToDir(
-    mediaPath,
+    originalPath,
     migCtx.outputDir,
     migCtx.migratedFiles
   );
   const mediaFile: MediaFile = {
     ext,
     path: savedPath,
-    originalPath: mediaPath,
+    originalPath: originalPath,
     jsonPath,
   };
-  let err = await applyJsonMeta(mediaFile);
+  let err = await applyMetaFile(mediaFile);
   if (!err) {
-    return mediaFile.path;
+    return mediaFile;
   }
 
-  if (err instanceof ExifWrongExtensionError) {
+  if (err instanceof WrongExtensionError) {
     const oldBase = basename(mediaFile.path);
     const newBase =
       oldBase.slice(0, oldBase.length - err.expectedExt.length) + err.actualExt;
@@ -96,21 +118,27 @@ async function migrateMediaFile(
       console.log(
         `Renamed wrong extension ${err.expectedExt} to ${err.actualExt}: ${mediaFile.path}`
       );
-    err = await applyJsonMeta(mediaFile);
+    err = await applyMetaFile(mediaFile);
     if (!err) {
-      return mediaFile.path;
+      return mediaFile;
     }
   }
-
-  err &&
-    migCtx.log &&
-    console.error(`Warning: ${err}\nOriginal file: ${mediaFile.originalPath}`);
 
   const savedPaths = await Promise.all([
     saveToDir(mediaFile.path, migCtx.errorDir, migCtx.migratedFiles, true),
     saveToDir(mediaFile.jsonPath, migCtx.errorDir, migCtx.migratedFiles),
   ]);
-  return savedPaths[0];
+  mediaFile.path = savedPaths[0];
+
+  if (migCtx.log) {
+    // too lazy writing error msgs
+    const m = err instanceof ExifToolError ? err.reason : err.constructor.name;
+    console.error(`Warning: ${m}`);
+    console.error(`Original path: ${mediaFile.originalPath}`);
+    console.error(`Saved path: ${mediaFile.path}`);
+  }
+
+  return err;
 }
 
 // Copies or moves to dir, saves duplicates in subfolders and returns the new path
