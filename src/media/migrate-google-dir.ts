@@ -1,18 +1,18 @@
 import { copyFile, mkdir, rename } from 'fs/promises';
 import { walkDir } from '../fs/walk-dir';
 import { basename, resolve } from 'path';
-import { findMetaFile } from '../exif/find-meta-file';
+import { findMetaFile } from '../meta/find-meta-file';
 import { MediaFileExtension } from './MediaFileExtension';
 import { MediaFile, MediaFileInfo } from './MediaFile';
-import { applyMetaFile } from '../exif/apply-meta-file';
+import { applyMetaFile } from '../meta/apply-meta-file';
 import { indexJsonFiles } from './title-json-map';
 import { supportedExtensions } from '../config/extensions';
 import { MediaMigrationError } from './MediaMigrationError';
 import { InvalidExtError } from './InvalidExtError';
 import { NoMetaFileError } from './NoMetaFileError';
-import { ExifToolError, WrongExtensionError } from '../exif/apply-meta-errors';
+import { ExifToolError, WrongExtensionError } from '../meta/apply-meta-errors';
 import { ExifTool } from 'exiftool-vendored';
-import { readMetaTitle } from '../exif/read-meta-title';
+import { readMetaTitle } from '../meta/read-meta-title';
 
 export interface MigrationContext {
   googleDir: string;
