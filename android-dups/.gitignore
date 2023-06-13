@@ -1,0 +1,8 @@
+*
+
+!.gitignore
+!README.md
+
+!find-cloud-phone-dups.py
+!fix-dates.sh
+!gen-deletion-lists.sh

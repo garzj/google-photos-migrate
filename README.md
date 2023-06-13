@@ -21,6 +21,10 @@ mkdir output error
 yarn start '/path/to/takeout/Google Fotos' './output' './error'
 ```
 
+## Further steps
+
+If you use Linux + Android, you might want to check out the scripts I used to locate duplicate media and keep the better versions in the [android-dups](./android-dups/) directory.
+
 ## Supported extensions
 
 - `.jpg`
