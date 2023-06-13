@@ -4,8 +4,9 @@ import { basename, resolve } from 'path';
 import { findJsonFile } from './find-json-file';
 import { MediaFileExtension, supportedExtensions } from './extensions';
 import { MediaFile } from './mediaFile';
-import { applyExifFromJson } from '../exif/apply-exif';
+import { applyJsonMeta } from '../exif/apply-json-meta';
 import { indexJsonFiles } from './title-json-map';
+import { ExifWrongExtensionError } from '../exif/errors';
 
 export interface MigrationContext {
   googleDir: string;
@@ -60,27 +61,42 @@ async function migrateMediaFile(
     return await saveToDir(mediaPath, migCtx.errorDir, migCtx.migratedFiles);
   }
 
-  let savedPath = await saveToDir(
+  const savedPath = await saveToDir(
     mediaPath,
     migCtx.outputDir,
     migCtx.migratedFiles
   );
   const mediaFile: MediaFile = { ext, path: savedPath, jsonPath };
-  const success = await applyExifFromJson(mediaFile);
-  if (!success) {
-    await Promise.all([
-      async () => {
-        savedPath = await saveToDir(
-          mediaFile.path,
-          migCtx.errorDir,
-          migCtx.migratedFiles,
-          true
-        );
-      },
-      saveToDir(mediaFile.jsonPath, migCtx.errorDir, migCtx.migratedFiles),
-    ]);
+  let err = await applyJsonMeta(mediaFile);
+  if (!err) {
+    return mediaFile.path;
   }
-  return savedPath;
+
+  if (err instanceof ExifWrongExtensionError) {
+    const oldBase = basename(mediaFile.path);
+    const newBase =
+      oldBase.slice(0, oldBase.length - err.expectedExt.length) + err.actualExt;
+    mediaFile.path = await saveToDir(
+      mediaFile.path,
+      migCtx.outputDir,
+      migCtx.migratedFiles,
+      true,
+      newBase
+    );
+    // console.log(
+    //   `Retrying with ${err.actualExt} instead of ${err.expectedExt}: ${mediaFile.path}`
+    // );
+    err = await applyJsonMeta(mediaFile);
+    if (!err) {
+      return mediaFile.path;
+    }
+  }
+
+  const savedPaths = await Promise.all([
+    saveToDir(mediaFile.path, migCtx.errorDir, migCtx.migratedFiles, true),
+    saveToDir(mediaFile.jsonPath, migCtx.errorDir, migCtx.migratedFiles),
+  ]);
+  return savedPaths[0];
 }
 
 // Copies or moves to dir, saves duplicates in subfolders and returns the new path
@@ -89,6 +105,7 @@ async function saveToDir(
   destDir: string,
   knownFiles: Set<string>,
   move = false,
+  saveBase?: string,
   duplicateIndex = 0
 ): Promise<string> {
   const saveDir = resolve(
@@ -97,10 +114,17 @@ async function saveToDir(
   );
   await mkdir(saveDir, { recursive: true });
 
-  const base = basename(file);
-  const savePath = resolve(saveDir, base);
+  saveBase = saveBase ?? basename(file);
+  const savePath = resolve(saveDir, saveBase);
   if (knownFiles.has(savePath)) {
-    return saveToDir(file, destDir, knownFiles, move, duplicateIndex + 1);
+    return saveToDir(
+      file,
+      destDir,
+      knownFiles,
+      move,
+      saveBase,
+      duplicateIndex + 1
+    );
   }
   knownFiles.add(savePath);
 
