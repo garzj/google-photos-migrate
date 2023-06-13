@@ -14,12 +14,14 @@ export interface MigrationContext {
   errorDir: string;
   titleJsonMap: Map<string, string[]>;
   migratedFiles: Set<string>;
+  log: boolean;
 }
 
 export async function migrateGoogleDir(
   googleDir: string,
   outputDir: string,
-  errorDir: string
+  errorDir: string,
+  log = false
 ): Promise<(string | null)[]> {
   const migCtx: MigrationContext = {
     googleDir,
@@ -27,6 +29,7 @@ export async function migrateGoogleDir(
     errorDir,
     titleJsonMap: await indexJsonFiles(googleDir),
     migratedFiles: new Set<string>(),
+    log,
   };
 
   const wg: Promise<string | null>[] = [];
@@ -83,9 +86,10 @@ async function migrateMediaFile(
       true,
       newBase
     );
-    // console.log(
-    //   `Retrying with ${err.actualExt} instead of ${err.expectedExt}: ${mediaFile.path}`
-    // );
+    migCtx.log &&
+      console.log(
+        `Renamed wrong extension ${err.expectedExt} to ${err.actualExt}: ${mediaFile.path}`
+      );
     err = await applyJsonMeta(mediaFile);
     if (!err) {
       return mediaFile.path;

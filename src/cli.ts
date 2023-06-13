@@ -61,7 +61,7 @@ const app = command({
     }
 
     console.log(`Started migration.`);
-    const res = await migrateGoogleDir(googleDir, outputDir, errorDir);
+    const res = await migrateGoogleDir(googleDir, outputDir, errorDir, true);
     console.log(`Done! Copied ${res.filter((p) => p !== null).length} files.`);
   },
 });
