@@ -24,12 +24,14 @@ cd android-dups
 # (make sure to exclude some more useless dirs or filter by ext)
 # (could also gzip before transfer but idk if that's faster)
 adb exec-out "tar --exclude 'storage/emulated/0/Android/data' --exclude 'storage/emulated/0/Android/obb' -c storage/emulated/0" > storage_takeout.tar
-tar xvf ./storage_takeout.tar
+# You can use the progress command to track file size and download speed
+progress -mp $(lsof storage_takeout.tar | tail -n -1 | awk '{print $2}')
 # Keep this file as a backup, just in case!
 
+tar xvf ./storage_takeout.tar
+
 # Run the comparison script and find duplicates (code by GPT, co-author was me)
-pip3 install opencv-python
-pip3 install scikit-image
+pip3 install opencv-python scikit-image
 python3 ./find-cloud-phone-dups.py
 
 # Apply newer dates
