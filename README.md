@@ -10,6 +10,9 @@ A tool like [google-photos-exif](https://github.com/mattwilson1024/google-photos
 ## Run
 
 ```bash
+git clone https://github.com/garzj/google-photos-migrate.git
+cd google-photos-migrate
+
 yarn
 yarn build
 
