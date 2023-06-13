@@ -1,10 +1,5 @@
-import { MetaType } from './MetaType';
-
-export interface MediaFileExtension {
-  suffix: string;
-  metaType: MetaType;
-  aliases?: string[];
-}
+import { MetaType } from '../media/MetaType';
+import { MediaFileExtension } from '../media/MediaFileExtension';
 
 export const supportedExtensions: MediaFileExtension[] = [
   { suffix: '.jpg', metaType: MetaType.EXIF },

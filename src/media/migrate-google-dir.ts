@@ -2,11 +2,12 @@ import { copyFile, mkdir, rename } from 'fs/promises';
 import { walkDir } from '../fs/walk-dir';
 import { basename, resolve } from 'path';
 import { findJsonFile } from './find-json-file';
-import { MediaFileExtension, supportedExtensions } from './extensions';
-import { MediaFile } from './mediaFile';
+import { MediaFileExtension } from './MediaFileExtension';
+import { MediaFile } from './MediaFile';
 import { applyJsonMeta } from '../exif/apply-json-meta';
 import { indexJsonFiles } from './title-json-map';
 import { ExifWrongExtensionError } from '../exif/errors';
+import { supportedExtensions } from '../config/extensions';
 
 export interface MigrationContext {
   googleDir: string;

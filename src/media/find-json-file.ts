@@ -1,6 +1,6 @@
 import { basename, dirname } from 'path';
 import { MigrationContext } from './migrate-google-dir';
-import { MediaFileExtension } from './extensions';
+import { MediaFileExtension } from './MediaFileExtension';
 import { fileExists } from '../fs/file-exists';
 
 export async function findJsonFile(

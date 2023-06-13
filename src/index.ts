@@ -1,8 +1,8 @@
 import './config/env';
 
-import { supportedExtensions } from './media/extensions';
 import { migrateGoogleDir } from './media/migrate-google-dir';
-import type { MediaFileExtension } from './media/extensions';
+import type { MediaFileExtension } from './media/MediaFileExtension';
+import { supportedExtensions } from './config/extensions';
 
 export { migrateGoogleDir, supportedExtensions };
 export type { MediaFileExtension };

@@ -1,4 +1,4 @@
-import { MediaFileExtension } from './extensions';
+import { MediaFileExtension } from './MediaFileExtension';
 
 export interface MediaFile {
   ext: MediaFileExtension;

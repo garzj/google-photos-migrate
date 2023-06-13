@@ -1,5 +1,5 @@
 import { WriteTags, exiftool } from 'exiftool-vendored';
-import { MediaFile } from '../media/mediaFile';
+import { MediaFile } from '../media/MediaFile';
 import { exhaustiveCheck } from '../ts';
 import { MetaType } from '../media/MetaType';
 import { readFile } from 'fs/promises';
