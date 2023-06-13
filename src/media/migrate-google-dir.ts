@@ -11,6 +11,7 @@ import { MediaMigrationError } from './MediaMigrationError';
 import { InvalidExtError } from './InvalidExtError';
 import { NoMetaFileError } from './NoMetaFileError';
 import { ExifToolError, WrongExtensionError } from '../exif/apply-meta-errors';
+import { ExifTool } from 'exiftool-vendored';
 
 export interface MigrationContext {
   googleDir: string;
@@ -19,6 +20,7 @@ export interface MigrationContext {
   titleJsonMap: Map<string, string[]>;
   migratedFiles: Set<string>;
   log: boolean;
+  exiftool: ExifTool;
 }
 
 export async function migrateGoogleDir(
@@ -34,17 +36,20 @@ export async function migrateGoogleDir(
     titleJsonMap: await indexJsonFiles(googleDir),
     migratedFiles: new Set<string>(),
     log,
+    exiftool: new ExifTool(),
   };
 
   const wg: ReturnType<typeof migrateMediaFile>[] = [];
   for await (const mediaPath of walkDir(googleDir)) {
     wg.push(migrateMediaFile(mediaPath, migCtx));
   }
-  const results = await Promise.all(wg);
-  return results.filter((res) => res !== null) as Exclude<
-    (typeof results)[number],
-    null
-  >[];
+  const results = (await Promise.all(wg)).filter(
+    (res) => res !== null
+  ) as Exclude<Awaited<(typeof wg)[number]>, null>[];
+
+  migCtx.exiftool.end();
+
+  return results;
 }
 
 async function migrateMediaFile(
@@ -98,7 +103,7 @@ async function migrateMediaFile(
     originalPath: originalPath,
     jsonPath,
   };
-  let err = await applyMetaFile(mediaFile);
+  let err = await applyMetaFile(mediaFile, migCtx);
   if (!err) {
     return mediaFile;
   }
@@ -118,7 +123,7 @@ async function migrateMediaFile(
       console.log(
         `Renamed wrong extension ${err.expectedExt} to ${err.actualExt}: ${mediaFile.path}`
       );
-    err = await applyMetaFile(mediaFile);
+    err = await applyMetaFile(mediaFile, migCtx);
     if (!err) {
       return mediaFile;
     }

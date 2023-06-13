@@ -1,4 +1,4 @@
-import { WriteTags, exiftool } from 'exiftool-vendored';
+import { WriteTags } from 'exiftool-vendored';
 import { MediaFile } from '../media/MediaFile';
 import { exhaustiveCheck } from '../ts';
 import { MetaType } from '../media/MetaType';
@@ -10,9 +10,11 @@ import {
   MissingMetaError,
   WrongExtensionError,
 } from './apply-meta-errors';
+import { MigrationContext } from '../media/migrate-google-dir';
 
 export async function applyMetaFile(
-  mediaFile: MediaFile
+  mediaFile: MediaFile,
+  migCtx: MigrationContext
 ): Promise<ApplyMetaError | null> {
   const metaJson = (await readFile(mediaFile.jsonPath)).toString();
   const meta: GoogleMetadata | undefined = JSON.parse(metaJson);
@@ -32,7 +34,7 @@ export async function applyMetaFile(
     ? new Date(parseInt(timeModifiedTimestamp) * 1000)
     : undefined;
 
-  // const curTags = await exiftool.read(mediaFile.path);
+  // const curTags = await migCtx.exiftool.read(mediaFile.path);
   const tags: WriteTags = {};
 
   switch (mediaFile.ext.metaType) {
@@ -56,7 +58,7 @@ export async function applyMetaFile(
   tags.FileModifyDate = timeTaken.toISOString();
 
   try {
-    await exiftool.write(mediaFile.path, tags, ['-overwrite_original']);
+    await migCtx.exiftool.write(mediaFile.path, tags, ['-overwrite_original']);
   } catch (e) {
     if (e instanceof Error) {
       const wrongExtMatch = e.message.match(
