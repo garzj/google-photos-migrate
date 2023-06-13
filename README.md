@@ -2,6 +2,7 @@
 
 A tool like [google-photos-exif](https://github.com/mattwilson1024/google-photos-exif), but does some extra things:
 
+- uses the titles from the .json file to recover previous filenames
 - moves duplicates into their own folder
 - tries to match files by the title in their .json file
 - fixes wrong extensions, identified by [ExifTool](https://exiftool.org/)

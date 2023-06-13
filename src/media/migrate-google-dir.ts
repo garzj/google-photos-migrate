@@ -12,6 +12,7 @@ import { InvalidExtError } from './InvalidExtError';
 import { NoMetaFileError } from './NoMetaFileError';
 import { ExifToolError, WrongExtensionError } from '../exif/apply-meta-errors';
 import { ExifTool } from 'exiftool-vendored';
+import { readMetaTitle } from '../exif/read-meta-title';
 
 export interface MigrationContext {
   googleDir: string;
@@ -91,16 +92,18 @@ async function migrateMediaFile(
     );
     return new NoMetaFileError(mediaFileInfo);
   }
+  mediaFileInfo.jsonPath = jsonPath;
 
-  const savedPath = await saveToDir(
+  mediaFileInfo.path = await saveToDir(
     originalPath,
     migCtx.outputDir,
-    migCtx.migratedFiles
+    migCtx.migratedFiles,
+    false,
+    await readMetaTitle(mediaFileInfo)
   );
   const mediaFile: MediaFile = {
+    ...mediaFileInfo,
     ext,
-    path: savedPath,
-    originalPath: originalPath,
     jsonPath,
   };
   let err = await applyMetaFile(mediaFile, migCtx);
