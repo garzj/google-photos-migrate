@@ -15,6 +15,7 @@ extensions = [
 similarity_threshold = 0.8
 
 duplicates_file = "./duplicates_data.txt"
+open(duplicates_file, "w").close()
 
 def compare_frames(frame1, frame2):
   # Resize frames to a consistent size for comparison
