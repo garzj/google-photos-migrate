@@ -70,7 +70,12 @@ async function migrateMediaFile(
     migCtx.outputDir,
     migCtx.migratedFiles
   );
-  const mediaFile: MediaFile = { ext, path: savedPath, jsonPath };
+  const mediaFile: MediaFile = {
+    ext,
+    path: savedPath,
+    originalPath: mediaPath,
+    jsonPath,
+  };
   let err = await applyJsonMeta(mediaFile);
   if (!err) {
     return mediaFile.path;
@@ -96,6 +101,10 @@ async function migrateMediaFile(
       return mediaFile.path;
     }
   }
+
+  err &&
+    migCtx.log &&
+    console.error(`Warning: ${err}\nOriginal file: ${mediaFile.originalPath}`);
 
   const savedPaths = await Promise.all([
     saveToDir(mediaFile.path, migCtx.errorDir, migCtx.migratedFiles, true),
