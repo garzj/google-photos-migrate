@@ -29,26 +29,23 @@ export async function applyMetaFile(
   //   ? new Date(parseInt(timeCreatedTimestamp) * 1000)
   //   : undefined;
 
-  const timeModifiedTimestamp = meta?.creationTime?.timestamp;
-  const timeModified = timeModifiedTimestamp
-    ? new Date(parseInt(timeModifiedTimestamp) * 1000)
-    : undefined;
-
   // const curTags = await migCtx.exiftool.read(mediaFile.path);
   const tags: WriteTags = {};
 
   switch (mediaFile.ext.metaType) {
     case MetaType.EXIF:
       tags.DateTimeOriginal = timeTaken.toISOString();
-      tags.CreateDate = timeTaken?.toISOString();
-      tags.ModifyDate = timeModified?.toISOString();
+      tags.CreateDate = timeTaken.toISOString();
+      tags.ModifyDate = timeTaken.toISOString();
       break;
     case MetaType.QUICKTIME:
       tags.DateTimeOriginal = timeTaken.toISOString();
+      tags.CreateDate = timeTaken.toISOString();
+      tags.ModifyDate = timeTaken.toISOString();
       tags.TrackCreateDate = timeTaken.toISOString();
-      tags.TrackModifyDate = timeModified?.toISOString();
+      tags.TrackModifyDate = timeTaken.toISOString();
       tags.MediaCreateDate = timeTaken.toISOString();
-      tags.MediaModifyDate = timeModified?.toISOString();
+      tags.MediaModifyDate = timeTaken.toISOString();
       break;
     case MetaType.NONE:
       break;
