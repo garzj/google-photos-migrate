@@ -16,6 +16,8 @@ export const supportedExtensions: MediaFileExtension[] = [
   { suffix: '.mov', metaType: MetaType.QUICKTIME },
   { suffix: '.qt', metaType: MetaType.QUICKTIME },
   { suffix: '.mov.qt', metaType: MetaType.QUICKTIME },
+  { suffix: '.3gp', metaType: MetaType.QUICKTIME },
+  { suffix: '.mp4v', metaType: MetaType.QUICKTIME },
   { suffix: '.mkv', metaType: MetaType.NONE },
   { suffix: '.wmv', metaType: MetaType.NONE },
   { suffix: '.webm', metaType: MetaType.NONE },
