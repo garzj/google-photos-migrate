@@ -13,6 +13,7 @@ import { NoMetaFileError } from './NoMetaFileError';
 import { ExifToolError, WrongExtensionError } from '../meta/apply-meta-errors';
 import { ExifTool } from 'exiftool-vendored';
 import { readMetaTitle } from '../meta/read-meta-title';
+import sanitize = require('sanitize-filename');
 
 export interface MigrationContext {
   googleDir: string;
@@ -75,21 +76,13 @@ async function migrateMediaFile(
     null
   );
   if (!ext) {
-    mediaFileInfo.path = await saveToDir(
-      originalPath,
-      migCtx.errorDir,
-      migCtx.migratedFiles
-    );
+    mediaFileInfo.path = await saveToDir(originalPath, migCtx.errorDir, migCtx);
     return new InvalidExtError(mediaFileInfo);
   }
 
   const jsonPath = await findMetaFile(originalPath, ext, migCtx);
   if (!jsonPath) {
-    mediaFileInfo.path = await saveToDir(
-      originalPath,
-      migCtx.errorDir,
-      migCtx.migratedFiles
-    );
+    mediaFileInfo.path = await saveToDir(originalPath, migCtx.errorDir, migCtx);
     return new NoMetaFileError(mediaFileInfo);
   }
   mediaFileInfo.jsonPath = jsonPath;
@@ -97,7 +90,7 @@ async function migrateMediaFile(
   mediaFileInfo.path = await saveToDir(
     originalPath,
     migCtx.outputDir,
-    migCtx.migratedFiles,
+    migCtx,
     false,
     await readMetaTitle(mediaFileInfo)
   );
@@ -118,7 +111,7 @@ async function migrateMediaFile(
     mediaFile.path = await saveToDir(
       mediaFile.path,
       migCtx.outputDir,
-      migCtx.migratedFiles,
+      migCtx,
       true,
       newBase
     );
@@ -133,8 +126,8 @@ async function migrateMediaFile(
   }
 
   const savedPaths = await Promise.all([
-    saveToDir(mediaFile.path, migCtx.errorDir, migCtx.migratedFiles, true),
-    saveToDir(mediaFile.jsonPath, migCtx.errorDir, migCtx.migratedFiles),
+    saveToDir(mediaFile.path, migCtx.errorDir, migCtx, true),
+    saveToDir(mediaFile.jsonPath, migCtx.errorDir, migCtx),
   ]);
   mediaFile.path = savedPaths[0];
 
@@ -153,7 +146,7 @@ async function migrateMediaFile(
 async function saveToDir(
   file: string,
   destDir: string,
-  knownFiles: Set<string>,
+  migCtx: MigrationContext,
   move = false,
   saveBase?: string,
   duplicateIndex = 0
@@ -165,22 +158,27 @@ async function saveToDir(
   await mkdir(saveDir, { recursive: true });
 
   saveBase = saveBase ?? basename(file);
-  const savePath = resolve(saveDir, saveBase);
-  if (knownFiles.has(savePath)) {
+  const sanitized = sanitize(saveBase, { replacement: '_' });
+  const savePath = resolve(saveDir, sanitized);
+  if (migCtx.log && saveBase != sanitized) {
+    console.error(`Sanitized file: ${file}`);
+    console.error(`New filename: ${sanitized}`);
+  }
+  if (migCtx.migratedFiles.has(savePath)) {
     return saveToDir(
       file,
       destDir,
-      knownFiles,
+      migCtx,
       move,
-      saveBase,
+      sanitized,
       duplicateIndex + 1
     );
   }
-  knownFiles.add(savePath);
+  migCtx.migratedFiles.add(savePath);
 
   if (move) {
     await rename(file, savePath);
-    knownFiles.delete(file);
+    migCtx.migratedFiles.delete(file);
   } else {
     await copyFile(file, savePath);
   }

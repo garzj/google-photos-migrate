@@ -20,6 +20,7 @@
     "cmd-ts": "^0.12.1",
     "dotenv": "^16.1.4",
     "exiftool-vendored": "^22.0.0",
+    "sanitize-filename": "^1.6.3",
     "ts-node": "^10.9.1"
   }
 }
