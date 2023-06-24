@@ -28,8 +28,12 @@ export async function migrateGoogleDir(
   googleDir: string,
   outputDir: string,
   errorDir: string,
-  log = false
+  log = false,
+  exiftool?: ExifTool,
+  endExifTool = !exiftool
 ): Promise<(MediaFile | MediaMigrationError)[]> {
+  exiftool ??= new ExifTool();
+
   const migCtx: MigrationContext = {
     googleDir,
     outputDir,
@@ -37,7 +41,7 @@ export async function migrateGoogleDir(
     titleJsonMap: await indexJsonFiles(googleDir),
     migrationLocks: new Map(),
     log,
-    exiftool: new ExifTool(),
+    exiftool,
   };
 
   const wg: ReturnType<typeof migrateMediaFile>[] = [];
@@ -48,7 +52,7 @@ export async function migrateGoogleDir(
     (res) => res !== null
   ) as Exclude<Awaited<(typeof wg)[number]>, null>[];
 
-  migCtx.exiftool.end();
+  endExifTool && exiftool.end();
 
   return results;
 }

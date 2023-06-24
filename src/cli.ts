@@ -1,8 +1,9 @@
 import { existsSync } from 'fs';
-import { command, run, string, positional, flag } from 'cmd-ts';
+import { command, run, string, positional, flag, number, option } from 'cmd-ts';
 import { migrateGoogleDir } from './media/migrate-google-dir';
 import { isEmptyDir } from './fs/is-empty-dir';
 import { MediaMigrationError } from './media/MediaMigrationError';
+import { ExifTool } from 'exiftool-vendored';
 
 const app = command({
   name: 'google-photos-migrate',
@@ -25,9 +26,18 @@ const app = command({
     force: flag({
       short: 'f',
       long: 'force',
+      description:
+        "Forces the operation if the given directories aren't empty.",
+    }),
+    timeout: option({
+      type: number,
+      short: 't',
+      long: 'timeout',
+      description:
+        'Sets the task timeout in milliseconds that will be passed to ExifTool.',
     }),
   },
-  handler: async ({ googleDir, outputDir, errorDir, force }) => {
+  handler: async ({ googleDir, outputDir, errorDir, force, timeout }) => {
     const errs: string[] = [];
     if (!existsSync(googleDir)) {
       errs.push('The specified google directory does not exist.');
@@ -66,6 +76,8 @@ const app = command({
       googleDir,
       outputDir,
       errorDir,
+      true,
+      new ExifTool({ taskTimeoutMillis: timeout }),
       true
     );
     const errCount = results.filter(
