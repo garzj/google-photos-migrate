@@ -45,6 +45,8 @@ Configured in [extensions.ts](./src/config/extensions.ts):
 - `.mov`
 - `.qt`
 - `.mov.qt`
+- `.3gp`
+- `.mp4v`
 - `.mkv`
 - `.wmv`
 - `.webm`
