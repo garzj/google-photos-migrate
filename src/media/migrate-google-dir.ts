@@ -1,6 +1,5 @@
-import { copyFile, mkdir, rename } from 'fs/promises';
 import { walkDir } from '../fs/walk-dir';
-import { basename, resolve } from 'path';
+import { basename } from 'path';
 import { findMetaFile } from '../meta/find-meta-file';
 import { MediaFileExtension } from './MediaFileExtension';
 import { MediaFile, MediaFileInfo } from './MediaFile';
@@ -13,14 +12,14 @@ import { NoMetaFileError } from './NoMetaFileError';
 import { ExifToolError, WrongExtensionError } from '../meta/apply-meta-errors';
 import { ExifTool } from 'exiftool-vendored';
 import { readMetaTitle } from '../meta/read-meta-title';
-import sanitize = require('sanitize-filename');
+import { saveToDir } from './save-to-dir';
 
 export interface MigrationContext {
   googleDir: string;
   outputDir: string;
   errorDir: string;
   titleJsonMap: Map<string, string[]>;
-  migratedFiles: Set<string>;
+  migrationLocks: Map<string, Promise<string>>;
   log: boolean;
   exiftool: ExifTool;
 }
@@ -36,7 +35,7 @@ export async function migrateGoogleDir(
     outputDir,
     errorDir,
     titleJsonMap: await indexJsonFiles(googleDir),
-    migratedFiles: new Set<string>(),
+    migrationLocks: new Map(),
     log,
     exiftool: new ExifTool(),
   };
@@ -140,47 +139,4 @@ async function migrateMediaFile(
   }
 
   return err;
-}
-
-// Copies or moves to dir, saves duplicates in subfolders and returns the new path
-async function saveToDir(
-  file: string,
-  destDir: string,
-  migCtx: MigrationContext,
-  move = false,
-  saveBase?: string,
-  duplicateIndex = 0
-): Promise<string> {
-  const saveDir = resolve(
-    destDir,
-    duplicateIndex > 0 ? `duplicates-${duplicateIndex}` : '.'
-  );
-  await mkdir(saveDir, { recursive: true });
-
-  saveBase = saveBase ?? basename(file);
-  const sanitized = sanitize(saveBase, { replacement: '_' });
-  const savePath = resolve(saveDir, sanitized);
-  if (migCtx.log && saveBase != sanitized) {
-    console.error(`Sanitized file: ${file}`);
-    console.error(`New filename: ${sanitized}`);
-  }
-  if (migCtx.migratedFiles.has(savePath)) {
-    return saveToDir(
-      file,
-      destDir,
-      migCtx,
-      move,
-      sanitized,
-      duplicateIndex + 1
-    );
-  }
-  migCtx.migratedFiles.add(savePath);
-
-  if (move) {
-    await rename(file, savePath);
-    migCtx.migratedFiles.delete(file);
-  } else {
-    await copyFile(file, savePath);
-  }
-  return savePath;
 }
