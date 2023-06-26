@@ -10,7 +10,7 @@
     "dev": "export NODE_ENV=development || set NODE_ENV=development&& npx ts-node-dev --respawn ./src/cli.ts"
   },
   "author": "Johannes Garz <jojogarz123@gmail.com> (https://www.garz.dev/)",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.3.0",
     "ts-node-dev": "^2.0.0",
