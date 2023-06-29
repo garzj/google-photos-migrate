@@ -19,7 +19,7 @@ yarn
 yarn build
 
 mkdir output error
-yarn start '/path/to/takeout/Google Fotos' './output' './error'
+yarn start '/path/to/takeout/Google Fotos' './output' './error' --timeout 60000
 ```
 
 ## Further steps
