@@ -31,6 +31,7 @@ const app = command({
     }),
     timeout: option({
       type: number,
+      defaultValue: () => 30000,
       short: 't',
       long: 'timeout',
       description:
