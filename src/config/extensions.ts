@@ -12,8 +12,16 @@ export const supportedExtensions: MediaFileExtension[] = [
   { suffix: '.heic', metaType: MetaType.QUICKTIME },
   { suffix: '.heif', metaType: MetaType.QUICKTIME },
   { suffix: '.gif', metaType: MetaType.NONE },
-  { suffix: '.mp4', metaType: MetaType.QUICKTIME, aliases: ['.heic'] },
-  { suffix: '.mov', metaType: MetaType.QUICKTIME },
+  {
+    suffix: '.mp4',
+    metaType: MetaType.QUICKTIME,
+    aliases: ['.heic', '.jpg', '.jpeg'], // Live photos
+  },
+  {
+    suffix: '.mov',
+    metaType: MetaType.QUICKTIME,
+    aliases: ['.heic', '.jpg', '.jpeg'], // Live photos
+  },
   { suffix: '.qt', metaType: MetaType.QUICKTIME },
   { suffix: '.mov.qt', metaType: MetaType.QUICKTIME },
   { suffix: '.3gp', metaType: MetaType.QUICKTIME },
