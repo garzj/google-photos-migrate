@@ -64,7 +64,6 @@ export async function findMetaFile(
   // <file>(_n-?|_n?|_?)(.<ext|extAlias>)?.json
   pushWithExts((woExt, ext) => {
     if (woExt.endsWith('_n-') || woExt.endsWith('_n') || woExt.endsWith('_')) {
-      mediaPath.includes('IMG_1127') && console.log(woExt);
       return [`${woExt.slice(0, -1)}${ext}`];
     }
     return [];
