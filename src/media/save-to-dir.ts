@@ -43,9 +43,8 @@ export async function saveToDir(
 ): Promise<string> {
   saveBase = saveBase ?? basename(file);
   const sanitized = sanitize(saveBase, { replacement: '_' });
-  if (migCtx.log && saveBase != sanitized) {
-    console.error(`Sanitized file: ${file}`);
-    console.error(`New filename: ${sanitized}`);
+  if (saveBase != sanitized) {
+    migCtx.warnLog(`Sanitized file: ${file}` + '\nNew filename: ${sanitized}');
   }
 
   const lcBase = saveBase.toLowerCase();

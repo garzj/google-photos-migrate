@@ -14,55 +14,55 @@ import { ExifTool } from 'exiftool-vendored';
 import { readMetaTitle } from '../meta/read-meta-title';
 import { saveToDir } from './save-to-dir';
 
-export interface MigrationContext {
+export type MigrationArgs = {
   googleDir: string;
   outputDir: string;
   errorDir: string;
+  warnLog?: (msg: string) => void;
+  exiftool?: ExifTool;
+  endExifTool?: boolean;
+};
+
+export type MigrationContext = Required<MigrationArgs> & {
   titleJsonMap: Map<string, string[]>;
   migrationLocks: Map<string, Promise<string>>;
-  log: boolean;
-  exiftool: ExifTool;
+};
+
+export async function* migrateGoogleDir(
+  args: MigrationArgs
+): AsyncGenerator<MediaFile | MediaMigrationError> {
+  const wg: (MediaFile | MediaMigrationError)[] = [];
+  for await (const result of migrateGoogleDirGen(args)) {
+    wg.push(result);
+  }
+  return await Promise.all(wg);
 }
 
-export async function migrateGoogleDir(
-  googleDir: string,
-  outputDir: string,
-  errorDir: string,
-  log = false,
-  exiftool?: ExifTool,
-  endExifTool = !exiftool
-): Promise<(MediaFile | MediaMigrationError)[]> {
-  exiftool ??= new ExifTool();
-
+export async function* migrateGoogleDirGen(
+  args: MigrationArgs
+): AsyncGenerator<MediaFile | MediaMigrationError> {
   const migCtx: MigrationContext = {
-    googleDir,
-    outputDir,
-    errorDir,
-    titleJsonMap: await indexJsonFiles(googleDir),
+    titleJsonMap: await indexJsonFiles(args.googleDir),
     migrationLocks: new Map(),
-    log,
-    exiftool,
+    ...args,
+    exiftool: args.exiftool ?? new ExifTool(),
+    endExifTool: args.endExifTool ?? !args.exiftool,
+    warnLog: args.warnLog ?? (() => {}),
   };
 
-  const wg: ReturnType<typeof migrateMediaFile>[] = [];
-  for await (const mediaPath of walkDir(googleDir)) {
-    wg.push(migrateMediaFile(mediaPath, migCtx));
+  for await (const mediaPath of walkDir(args.googleDir)) {
+    if (mediaPath.endsWith('.json')) continue;
+
+    yield migrateMediaFile(mediaPath, migCtx);
   }
-  const results = (await Promise.all(wg)).filter(
-    (res) => res !== null
-  ) as Exclude<Awaited<(typeof wg)[number]>, null>[];
 
-  endExifTool && exiftool.end();
-
-  return results;
+  migCtx.endExifTool && migCtx.exiftool.end();
 }
 
 async function migrateMediaFile(
   originalPath: string,
   migCtx: MigrationContext
-): Promise<MediaFile | MediaMigrationError | null> {
-  if (originalPath.endsWith('.json')) return null;
-
+): Promise<MediaFile | MediaMigrationError> {
   const mediaFileInfo: MediaFileInfo = {
     originalPath,
     path: originalPath,
@@ -118,10 +118,9 @@ async function migrateMediaFile(
       true,
       newBase
     );
-    migCtx.log &&
-      console.log(
-        `Renamed wrong extension ${err.expectedExt} to ${err.actualExt}: ${mediaFile.path}`
-      );
+    migCtx.warnLog(
+      `Renamed wrong extension ${err.expectedExt} to ${err.actualExt}: ${mediaFile.path}`
+    );
     err = await applyMetaFile(mediaFile, migCtx);
     if (!err) {
       return mediaFile;
@@ -134,13 +133,13 @@ async function migrateMediaFile(
   ]);
   mediaFile.path = savedPaths[0];
 
-  if (migCtx.log) {
-    // too lazy writing error msgs
-    const m = err instanceof ExifToolError ? err.reason : err.constructor.name;
-    console.error(`Warning: ${m}`);
-    console.error(`Original path: ${mediaFile.originalPath}`);
-    console.error(`Saved path: ${mediaFile.path}`);
-  }
+  // too lazy writing error msgs
+  const m = err instanceof ExifToolError ? err.reason : err.constructor.name;
+  migCtx.warnLog(
+    `Warning: ${m}` +
+      `\nOriginal path: ${mediaFile.originalPath}` +
+      '\nSaved path: ${mediaFile.path}'
+  );
 
   return err;
 }

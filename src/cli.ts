@@ -1,8 +1,7 @@
 import { existsSync } from 'fs';
 import { command, run, string, positional, flag, number, option } from 'cmd-ts';
-import { migrateGoogleDir } from './media/migrate-google-dir';
+import { migrateGoogleDirGen } from './media/migrate-google-dir';
 import { isEmptyDir } from './fs/is-empty-dir';
-import { MediaMigrationError } from './media/MediaMigrationError';
 import { ExifTool } from 'exiftool-vendored';
 
 const app = command({
@@ -73,21 +72,29 @@ const app = command({
     }
 
     console.log(`Started migration.`);
-    const results = await migrateGoogleDir(
+    const migGen = migrateGoogleDirGen({
       googleDir,
       outputDir,
       errorDir,
-      true,
-      new ExifTool({ taskTimeoutMillis: timeout }),
-      true
-    );
-    const errCount = results.filter(
-      (res) => res instanceof MediaMigrationError
-    ).length;
-    const sucCount = results.length - errCount;
-    console.log(`Done! Processed ${results.length} files.`);
-    console.log(`Files migrated: ${sucCount}`);
-    console.log(`Files failed: ${errCount}`);
+      warnLog: console.error,
+      exiftool: new ExifTool({ taskTimeoutMillis: timeout }),
+      endExifTool: true,
+    });
+
+    const counts = { err: 0, suc: 0 };
+    for await (const result of migGen) {
+      if (result instanceof Error) {
+        console.log(`Error: ${result}`);
+        counts.err++;
+        continue;
+      }
+
+      counts.suc++;
+    }
+
+    console.log(`Done! Processed ${counts.suc + counts.err} files.`);
+    console.log(`Files migrated: ${counts.suc}`);
+    console.log(`Files failed: ${counts.err}`);
   },
 });
 
