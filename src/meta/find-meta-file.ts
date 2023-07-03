@@ -24,50 +24,46 @@ export async function findMetaFile(
   // Otherwise, try (from most to least significant)
   const potPaths = new Set<string>();
 
-  const pushWithExts = (
-    mapToBase: (woExt: string, ext: string) => string[]
-  ) => {
-    let woExt = mediaPath.slice(0, mediaPath.length - ext.suffix.length);
-    woExt = woExt.replace(/-(edited|bearbeitet)$/i, '');
+  const pushWithPotExt = (base: string, potExt: string) => {
+    const potBases: string[] = [];
 
-    const exts: string[] = [];
+    // <name>(.<ext|extAlias>)?.json
+    potBases.push(`${base}${potExt}`);
 
-    // <name>.json
-    exts.push('');
-    // <name>.<ext>.json
-    exts.push(ext.suffix);
-    // <name>.<extAlias>.json
-    exts.push(...(ext.aliases ?? []));
-
-    for (const potExt of exts) {
-      for (const potBase of mapToBase(woExt, potExt)) {
-        potPaths.add(`${potBase}.json`);
-      }
-    }
-  };
-
-  // <name>(.<ext|extAlias>)?.json
-  pushWithExts((woExt, ext) => [`${woExt}${ext}`]);
-
-  pushWithExts((woExt, ext) => {
     // Stolen from https://github.com/mattwilson1024/google-photos-exif/blob/master/src/helpers/get-companion-json-path-for-media-file.ts
-    const nameCounterMatch = woExt.match(/(?<name>.*)(?<counter>\(\d+\))$/);
+    const nameCounterMatch = base.match(/(?<name>.*)(?<counter>\(\d+\))$/);
     const name = nameCounterMatch?.groups?.['name'];
     const counter = nameCounterMatch?.groups?.['counter'];
     if (name !== undefined && counter !== undefined) {
       // <file>(.<ext|extAlias>)?(n).json
-      return [`${name}${ext}${counter}`];
+      potBases.push(`${name}${potExt}${counter}`);
     }
-    return [];
-  });
 
-  // <file>(_n-?|_n?|_?)(.<ext|extAlias>)?.json
-  pushWithExts((woExt, ext) => {
-    if (woExt.endsWith('_n-') || woExt.endsWith('_n') || woExt.endsWith('_')) {
-      return [`${woExt.slice(0, -1)}${ext}`];
+    // <file>(_n-?|_n?|_?)(.<ext|extAlias>)?.json
+    if (base.endsWith('_n-') || base.endsWith('_n') || base.endsWith('_')) {
+      potBases.push(`${base.slice(0, -1)}${potExt}`);
     }
-    return [];
-  });
+
+    for (const potBase of potBases) {
+      potPaths.add(`${potBase}.json`);
+    }
+  };
+
+  let base = mediaPath.slice(0, mediaPath.length - ext.suffix.length);
+  base = base.replace(/-(edited|bearbeitet)$/i, '');
+
+  const potExts: string[] = [];
+
+  // <name>.<ext>.json
+  potExts.push(ext.suffix);
+  // <name>.<extAlias>.json
+  potExts.push(...(ext.aliases ?? []));
+  // <name>.json
+  potExts.push('');
+
+  for (const potExt of potExts) {
+    pushWithPotExt(base, potExt);
+  }
 
   for (const potPath of potPaths) {
     if (!(await fileExists(potPath))) {
