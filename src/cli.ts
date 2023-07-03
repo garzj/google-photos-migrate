@@ -84,7 +84,7 @@ const app = command({
     const counts = { err: 0, suc: 0 };
     for await (const result of migGen) {
       if (result instanceof Error) {
-        console.log(`Error: ${result}`);
+        console.error(`Error: ${result}`);
         counts.err++;
         continue;
       }
