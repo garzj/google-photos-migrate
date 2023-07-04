@@ -133,13 +133,5 @@ async function migrateMediaFile(
   ]);
   mediaFile.path = savedPaths[0];
 
-  // too lazy writing error msgs
-  const m = err instanceof ExifToolError ? err.reason : err.constructor.name;
-  migCtx.warnLog(
-    `Warning: ${m}` +
-      `\nOriginal path: ${mediaFile.originalPath}` +
-      '\nSaved path: ${mediaFile.path}'
-  );
-
   return err;
 }
