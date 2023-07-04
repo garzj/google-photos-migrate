@@ -23,29 +23,25 @@ export async function applyMetaFile(
   if (timeTakenTimestamp === undefined)
     return new MissingMetaError(mediaFile, 'photoTakenTime');
   const timeTaken = new Date(parseInt(timeTakenTimestamp) * 1000);
+  // always UTC as per https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString
+  const timeTakenUTC = timeTaken.toISOString();
 
-  // const timeCreatedTimestamp = meta?.creationTime?.timestamp;
-  // const timeCreated = timeCreatedTimestamp
-  //   ? new Date(parseInt(timeCreatedTimestamp) * 1000)
-  //   : undefined;
-
-  // const curTags = await migCtx.exiftool.read(mediaFile.path);
   const tags: WriteTags = {};
 
   switch (mediaFile.ext.metaType) {
     case MetaType.EXIF:
-      tags.DateTimeOriginal = timeTaken.toISOString();
-      tags.CreateDate = timeTaken.toISOString();
-      tags.ModifyDate = timeTaken.toISOString();
+      tags.SubSecDateTimeOriginal = timeTakenUTC;
+      tags.SubSecCreateDate = timeTakenUTC;
+      tags.SubSecModifyDate = timeTakenUTC;
       break;
     case MetaType.QUICKTIME:
-      tags.DateTimeOriginal = timeTaken.toISOString();
-      tags.CreateDate = timeTaken.toISOString();
-      tags.ModifyDate = timeTaken.toISOString();
-      tags.TrackCreateDate = timeTaken.toISOString();
-      tags.TrackModifyDate = timeTaken.toISOString();
-      tags.MediaCreateDate = timeTaken.toISOString();
-      tags.MediaModifyDate = timeTaken.toISOString();
+      tags.DateTimeOriginal = timeTakenUTC;
+      tags.CreateDate = timeTakenUTC;
+      tags.ModifyDate = timeTakenUTC;
+      tags.TrackCreateDate = timeTakenUTC;
+      tags.TrackModifyDate = timeTakenUTC;
+      tags.MediaCreateDate = timeTakenUTC;
+      tags.MediaModifyDate = timeTakenUTC;
       break;
     case MetaType.NONE:
       break;
@@ -53,10 +49,14 @@ export async function applyMetaFile(
       exhaustiveCheck(mediaFile.ext.metaType);
   }
 
-  tags.FileModifyDate = timeTaken.toISOString();
+  tags.FileModifyDate = timeTakenUTC;
 
   try {
-    await migCtx.exiftool.write(mediaFile.path, tags, ['-overwrite_original']);
+    await migCtx.exiftool.write(mediaFile.path, tags, [
+      '-overwrite_original',
+      '-api',
+      'quicktimeutc',
+    ]);
   } catch (e) {
     if (e instanceof Error) {
       const wrongExtMatch = e.message.match(
