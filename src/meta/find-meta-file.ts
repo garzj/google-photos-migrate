@@ -50,7 +50,7 @@ export async function findMetaFile(
   };
 
   let base = mediaPath.slice(0, mediaPath.length - ext.suffix.length);
-  base = base.replace(/-(edited|bearbeitet)$/i, '');
+  base = base.replace(/-(edited|bearbeitet|modifié)$/i, '');
 
   const potExts: string[] = [];
 
