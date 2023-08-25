@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { existsSync } from 'fs';
 import { command, run, string, positional, flag, number, option } from 'cmd-ts';
 import { migrateGoogleDirGen } from './media/migrate-google-dir';
