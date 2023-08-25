@@ -14,7 +14,7 @@ A tool like [google-photos-exif](https://github.com/mattwilson1024/google-photos
 ```bash
 mkdir output error
 
-npx google-photos-migrate '/path/to/takeout/Google Fotos' './output' './error' --timeout 60000
+npx google-photos-migrate@latest '/path/to/takeout/Google Fotos' './output' './error' --timeout 60000
 ```
 
 ## Further steps
