@@ -5,7 +5,7 @@ output/
 error/
 
 # Build
-build/
+lib/
 
 # Env files
 .env
