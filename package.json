@@ -20,8 +20,8 @@
     "cmd-ts": "^0.12.1",
     "dotenv": "^16.1.4",
     "exiftool-vendored": "^22.0.0",
+    "glob": "^10.3.3",
     "sanitize-filename": "^1.6.3",
-    "ts-node": "^10.9.1",
-    "glob": "^10.13.3"
+    "ts-node": "^10.9.1"
   }
 }
