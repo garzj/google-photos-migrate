@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, rename } from 'fs';
+import { cpSync, existsSync, mkdirSync } from 'fs';
 import {
   command,
   subcommands,
@@ -22,7 +22,7 @@ const unzip = command({
   handler: async () => {},
 });
 
-async function run_basic_migration(
+async function runBasicMigration(
   googleDir: string,
   outputDir: string,
   errorDir: string,
@@ -54,7 +54,7 @@ async function run_basic_migration(
   console.log(`Files failed: ${counts.err}`);
 }
 
-async function run_migrations_checked(
+async function runMigrationsChecked(
   albumDir: string,
   outDir: string,
   errDir: string,
@@ -77,14 +77,14 @@ async function run_migrations_checked(
     process.exit(1);
   }
 
-  await run_basic_migration(albumDir, outDir, errDir, exifTool);
+  await runBasicMigration(albumDir, outDir, errDir, exifTool);
 
   if (check_errDir && !(await isEmptyDir(errDir))) {
     const errFiles: string[] = await glob(`${errDir}/*`);
     for (let file of errFiles) {
-      exifTool.rewriteAllTags(file, path.join(albumDir, basename(file)));
+      await exifTool.rewriteAllTags(file, path.join(albumDir, basename(file)));
     }
-    await run_migrations_checked(
+    await runMigrationsChecked(
       albumDir,
       outDir,
       errDir,
@@ -95,7 +95,7 @@ async function run_migrations_checked(
   }
 }
 
-async function process_albums(
+async function processAlbums(
   rootDir: string,
   timeout: number,
   exifTool: ExifTool
@@ -110,7 +110,10 @@ async function process_albums(
     let albumName = basename(album);
     let outDir = `${rootDir}/AlbumsProcessed/${albumName}`;
     let errDir = `${rootDir}/AlbumsError/${albumName}`;
-    await run_migrations_checked(
+    mkdirSync(album, {recursive: true});
+    mkdirSync(outDir, {recursive: true});
+    mkdirSync(errDir, {recursive: true});
+    await runMigrationsChecked(
       album,
       outDir,
       errDir,
@@ -121,7 +124,7 @@ async function process_albums(
   }
 }
 
-async function process_photos(
+async function processPhotos(
   rootDir: string,
   timeout: number,
   exifTool: ExifTool
@@ -131,8 +134,11 @@ async function process_photos(
   const albumDir = `${rootDir}/Photos`;
   const outDir = `${rootDir}/PhotosProcessed`;
   const errDir = `${rootDir}/PhotosError`;
+  mkdirSync(albumDir, {recursive: true});
+  mkdirSync(outDir, {recursive: true});
+  mkdirSync(errDir, {recursive: true});
 
-  await run_migrations_checked(
+  await runMigrationsChecked(
     albumDir,
     outDir,
     errDir,
@@ -142,27 +148,21 @@ async function process_photos(
   );
 }
 
-async function _restructure_if_needed(folders: string[], targetDir: string) {
-  if (existsSync(targetDir) && (await glob(`${targetDir}/*`)).length > 0) {
-    console.log(
-      `${targetDir} exists and is non-empty, assuming no further restructing needed`
-    );
+async function _restructureIfNeeded(folders: string[], targetDir: string) {
+  if (existsSync(targetDir) && ((await glob(`${targetDir}/*`)).length) > 0){
+    console.log(`${targetDir} exists and is not empty. No restructuring needed.`);
     return;
   }
-  mkdirSync(targetDir);
-  if (folders.length == 0) {
-    console.log(`Warning: no folders were moved to ${targetDir}`);
+  console.log(`Starting restructure of ${folders.length} directories`)
+  mkdirSync(targetDir, {recursive: true});
+  for (let folder of folders){
+    console.log(`Copying ${folder} to ${targetDir}/${basename(folder)}`)
+    cpSync(folder, `${targetDir}/${basename(folder)}`, {recursive: true});
   }
-  for (let folder of folders) {
-    rename(folder, path.join(targetDir, folder), function (err) {
-      if (err) throw err;
-      console.log('Successfully moved!');
-    });
-  }
-  console.log(`Restructured ${folders.length} folders`);
+  console.log(`Sucsessfully restructured ${folders.length} directories`)
 }
 
-async function restructure_if_needed(rootDir: string) {
+async function restructureIfNeeded(rootDir: string) {
   // before
   // $rootdir/My Album 1
   // $rootdir/My Album 2
@@ -176,15 +176,16 @@ async function restructure_if_needed(rootDir: string) {
   const photosDir: string = `${rootDir}/Photos`;
 
   // move the "Photos from $YEAR" directories to Photos/
-  _restructure_if_needed(await glob(`${rootDir}/Photos from */`), photosDir);
-
+  _restructureIfNeeded(await glob(`${rootDir}/Photos from */`), photosDir);
+  
   // move everythingg else to Albums/, so we end up with two top level folders
   const fullSet: Set<string> = new Set(await glob(`${rootDir}/*/`));
-  const photoSet: Set<string> = new Set([photosDir]);
+  const photoSet: Set<string> = new Set(await glob(`${rootDir}/Photos from */`));
+  photoSet.add(`${rootDir}/Photos`);
   const everythingExceptPhotosDir: string[] = Array.from(
     new Set([...fullSet].filter((x) => !photoSet.has(x)))
   );
-  _restructure_if_needed(everythingExceptPhotosDir, `${rootDir}/Albums`);
+  _restructureIfNeeded(everythingExceptPhotosDir, `${rootDir}/Albums`);
 }
 
 async function run_full_migration(
@@ -197,12 +198,13 @@ async function run_full_migration(
   // rootdir refers to that subfolder
 
   rootDir = (await glob(`${rootDir}/Google*`))[0].replace(/\/+$/, '');
-  await restructure_if_needed(rootDir);
-  await process_albums(rootDir, timeout, exifTool);
-  await process_photos(rootDir, timeout, exifTool);
+  await restructureIfNeeded(rootDir);
+  await processAlbums(rootDir, timeout, exifTool);
+  await processPhotos(rootDir, timeout, exifTool);
+  exifTool.end();
 }
 
-const full_migrate = command({
+const fullMigrate = command({
   name: 'google-photos-migrate-full',
   args: {
     takeoutDir: positional({
@@ -234,12 +236,6 @@ const full_migrate = command({
       errs.forEach((e) => console.error(e));
       process.exit(1);
     }
-
-    if (!force) {
-      errs.push(
-        'The output directory is not empty. Pass "-f" to force the operation.'
-      );
-    }
     if (await isEmptyDir(takeoutDir)) {
       errs.push('The google directory is empty. Nothing to do.');
     }
@@ -248,11 +244,12 @@ const full_migrate = command({
       process.exit(1);
     }
     const exifTool = new ExifTool({ taskTimeoutMillis: timeout });
+    
     run_full_migration(takeoutDir, timeout, exifTool);
   },
 });
 
-const folder_migrate = command({
+const folderMigrate = command({
   name: 'google-photos-migrate-folder',
   args: {
     googleDir: positional({
@@ -320,13 +317,13 @@ const folder_migrate = command({
     }
     const exifTool = new ExifTool({ taskTimeoutMillis: timeout });
 
-    await run_basic_migration(googleDir, outputDir, errorDir, exifTool);
+    await runBasicMigration(googleDir, outputDir, errorDir, exifTool);
   },
 });
 
 const app = subcommands({
   name: 'google-photos-migrate',
-  cmds: { full_migrate, folder_migrate, unzip },
+  cmds: { fullMigrate, folderMigrate, unzip },
 });
 
 run(app, process.argv.slice(2));
