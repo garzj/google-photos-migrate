@@ -84,7 +84,7 @@ async function runMigrationsChecked(
   if (check_errDir && !(await isEmptyDir(errDir))) {
     const errFiles: string[] = await glob(`${errDir}/*`);
     for (let file of errFiles) {
-      await exifTool.rewriteAllTags(file, path.join(albumDir, basename(file)));
+      // await exifTool.rewriteAllTags(file, path.join(albumDir, basename(file)));
     }
     await runMigrationsChecked(
       albumDir,
@@ -190,7 +190,7 @@ async function restructureIfNeeded(rootDir: string) {
   _restructureIfNeeded(everythingExceptPhotosDir, `${rootDir}/Albums`);
 }
 
-async function run_full_migration(
+async function runFullMigration(
   rootDir: string,
   timeout: number,
   exifTool: ExifTool
@@ -247,7 +247,7 @@ const fullMigrate = command({
     }
     const exifTool = new ExifTool({ taskTimeoutMillis: timeout });
     
-    run_full_migration(takeoutDir, timeout, exifTool);
+    runFullMigration(takeoutDir, timeout, exifTool);
   },
 });
 
