@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { cpSync, existsSync, mkdirSync } from 'fs';
 import {
   command,

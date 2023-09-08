@@ -7,19 +7,14 @@ A tool like [google-photos-exif](https://github.com/mattwilson1024/google-photos
 - tries to match files by the title in their .json file
 - fixes wrong extensions, identified by [ExifTool](https://exiftool.org/)
 - video files won't show up as from 1970
-- works for English and German (for more langs fix [this file](./src/meta/find-meta-file.ts), line 31)
+- works for English and German (for more langs fix [this file](./src/meta/find-meta-file.ts))
 
-## Run
+## Run this tool
 
 ```bash
-git clone https://github.com/garzj/google-photos-migrate.git
-cd google-photos-migrate
-
-yarn
-yarn build
-
 mkdir output error
-yarn start '/path/to/takeout/Google Fotos' './output' './error' --timeout 60000
+
+npx google-photos-migrate@latest '/path/to/takeout/Google Fotos' './output' './error' --timeout 60000
 ```
 
 ## Further steps

@@ -1,5 +1,7 @@
-import * as dotenv from 'dotenv';
-dotenv.config();
+try {
+  const dotenv = require('dotenv');
+  dotenv.config();
+} catch {}
 
 declare global {
   namespace NodeJS {
@@ -10,3 +12,5 @@ declare global {
 }
 
 process.env.NODE_ENV ??= 'production';
+
+export {};
