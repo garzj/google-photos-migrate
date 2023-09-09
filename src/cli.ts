@@ -61,7 +61,6 @@ async function runMigrationsChecked(
   outDir: string,
   errDir: string,
   timeout: number,
-  exifTool: ExifTool,
   check_errDir: boolean
 ) {
   const errs: string[] = [];
@@ -79,19 +78,21 @@ async function runMigrationsChecked(
     process.exit(1);
   }
 
+  const exifTool = new ExifTool({ taskTimeoutMillis: timeout });
   await runBasicMigration(albumDir, outDir, errDir, exifTool);
 
   if (check_errDir && !(await isEmptyDir(errDir))) {
     const errFiles: string[] = await glob(`${errDir}/*`);
+    const exifTool = new ExifTool({ taskTimeoutMillis: timeout });
     for (let file of errFiles) {
-      // await exifTool.rewriteAllTags(file, path.join(albumDir, basename(file)));
+      await exifTool.rewriteAllTags(file, path.join(albumDir, `${basename(file)}-1`));
     }
+    exifTool.end();
     await runMigrationsChecked(
       albumDir,
       outDir,
       errDir,
       timeout,
-      exifTool,
       false
     );
   }
@@ -100,7 +101,6 @@ async function runMigrationsChecked(
 async function processAlbums(
   rootDir: string,
   timeout: number,
-  exifTool: ExifTool
 ) {
   const globStr: string = `${rootDir}/Albums/*/`;
   const albums: string[] = await glob(globStr);
@@ -120,7 +120,6 @@ async function processAlbums(
       outDir,
       errDir,
       timeout,
-      exifTool,
       true
     );
   }
@@ -129,7 +128,6 @@ async function processAlbums(
 async function processPhotos(
   rootDir: string,
   timeout: number,
-  exifTool: ExifTool
 ) {
   // Also run the exif fix for the photos
   console.log('Processing photos...');
@@ -145,7 +143,6 @@ async function processPhotos(
     outDir,
     errDir,
     timeout,
-    exifTool,
     true
   );
 }
@@ -193,7 +190,6 @@ async function restructureIfNeeded(rootDir: string) {
 async function runFullMigration(
   rootDir: string,
   timeout: number,
-  exifTool: ExifTool
 ) {
   // at least in my takeout, the Takeout folder contains a subfolder
   // Takeout/Google Foto
@@ -201,9 +197,8 @@ async function runFullMigration(
 
   rootDir = (await glob(`${rootDir}/Google*`))[0].replace(/\/+$/, '');
   await restructureIfNeeded(rootDir);
-  await processAlbums(rootDir, timeout, exifTool);
-  await processPhotos(rootDir, timeout, exifTool);
-  exifTool.end();
+  await processPhotos(rootDir, timeout);
+  await processAlbums(rootDir, timeout);
 }
 
 const fullMigrate = command({
@@ -245,9 +240,8 @@ const fullMigrate = command({
       errs.forEach((e) => console.error(e));
       process.exit(1);
     }
-    const exifTool = new ExifTool({ taskTimeoutMillis: timeout });
     
-    runFullMigration(takeoutDir, timeout, exifTool);
+    runFullMigration(takeoutDir, timeout);
   },
 });
 
@@ -317,8 +311,8 @@ const folderMigrate = command({
       errs.forEach((e) => console.error(e));
       process.exit(1);
     }
-    const exifTool = new ExifTool({ taskTimeoutMillis: timeout });
 
+    const exifTool = new ExifTool({ taskTimeoutMillis: timeout });
     await runBasicMigration(googleDir, outputDir, errorDir, exifTool);
   },
 });
