@@ -17,12 +17,8 @@ import { ExifTool } from 'exiftool-vendored';
 import { glob } from 'glob';
 import { basename } from 'path';
 import path = require('path');
+import { inferLikelyOffsetMinutes } from 'exiftool-vendored/dist/Timezones';
 
-const unzip = command({
-  name: 'unzipper',
-  args: {},
-  handler: async () => {},
-});
 
 async function runBasicMigration(
   googleDir: string,
@@ -85,7 +81,12 @@ async function runMigrationsChecked(
     const errFiles: string[] = await glob(`${errDir}/*`);
     const exifTool = new ExifTool({ taskTimeoutMillis: timeout });
     for (let file of errFiles) {
-      await exifTool.rewriteAllTags(file, path.join(albumDir, `${basename(file)}-1`));
+      if (file.endsWith(".json")){
+        console.log(`Cannot fix metadata for ${file} as .json is an unsupported file type.`);
+        continue;
+      }
+      console.log(`Rewriting all tags from ${file}, to  ${path.join(albumDir, `cleaned-${basename(file)}`)}`);
+      await exifTool.rewriteAllTags(file, path.join(albumDir, `cleaned-${basename(file)}`));
     }
     exifTool.end();
     await runMigrationsChecked(
@@ -201,19 +202,18 @@ async function runFullMigration(
   await processAlbums(rootDir, timeout);
 }
 
-const fullMigrate = command({
-  name: 'google-photos-migrate-full',
+const rewriteAllTags = command({
+  name: 'rewrite all tags for single file',
   args: {
-    takeoutDir: positional({
+    inFile: positional({
       type: string,
-      displayName: 'takeout_dir',
-      description: 'The path to your "Takeout" directory.',
+      displayName: 'in_file',
+      description: 'The path to your input file.',
     }),
-    force: flag({
-      short: 'f',
-      long: 'force',
-      description:
-        "Forces the operation if the given directories aren't empty.",
+    outFile: positional({
+      type: string,
+      displayName: 'out_file',
+      description: 'The path to your output location for the file.',
     }),
     timeout: option({
       type: number,
@@ -224,7 +224,31 @@ const fullMigrate = command({
         'Sets the task timeout in milliseconds that will be passed to ExifTool.',
     }),
   },
-  handler: async ({ takeoutDir, force, timeout }) => {
+  handler: async ({inFile, outFile, timeout}) => {
+    const exifTool = new ExifTool({ taskTimeoutMillis: timeout });
+    await exifTool.rewriteAllTags(inFile, outFile);
+    exifTool.end();
+  },
+});
+
+const fullMigrate = command({
+  name: 'google-photos-migrate-full',
+  args: {
+    takeoutDir: positional({
+      type: string,
+      displayName: 'takeout_dir',
+      description: 'The path to your "Takeout" directory.',
+    }),
+    timeout: option({
+      type: number,
+      defaultValue: () => 30000,
+      short: 't',
+      long: 'timeout',
+      description:
+        'Sets the task timeout in milliseconds that will be passed to ExifTool.',
+    }),
+  },
+  handler: async ({ takeoutDir, timeout }) => {
     const errs: string[] = [];
     if (!existsSync(takeoutDir)) {
       errs.push('The specified takeout directory does not exist.');
@@ -236,11 +260,21 @@ const fullMigrate = command({
     if (await isEmptyDir(takeoutDir)) {
       errs.push('The google directory is empty. Nothing to do.');
     }
+    if (!(await isEmptyDir(`${takeoutDir}/Photos`))) {
+      errs.push(
+        'The Photos directory is not empty. Please delete it and try again.'
+      );
+    }
+    if (!(await isEmptyDir(`${takeoutDir}/Albums`))) {
+      errs.push(
+        'The Albums directory is not empty. Please delete it and try again.'
+      );
+    }
     if (errs.length !== 0) {
       errs.forEach((e) => console.error(e));
       process.exit(1);
     }
-    
+
     runFullMigration(takeoutDir, timeout);
   },
 });
@@ -319,7 +353,7 @@ const folderMigrate = command({
 
 const app = subcommands({
   name: 'google-photos-migrate',
-  cmds: { fullMigrate, folderMigrate, unzip },
+  cmds: { fullMigrate, folderMigrate, rewriteAllTags },
 });
 
 run(app, process.argv.slice(2));
