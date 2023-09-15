@@ -61,13 +61,13 @@ async function runMigrationsChecked(
 ) {
   const errs: string[] = [];
   if (!existsSync(albumDir)) {
-    errs.push('The specified google directory does not exist.');
+    errs.push(`The specified google directory does not exist: ${albumDir}`);
   }
   if (!existsSync(outDir)) {
-    errs.push('The specified output directory does not exist.');
+    errs.push(`The specified google directory does not exist: ${outDir}`);
   }
   if (!existsSync(errDir)) {
-    errs.push('The specified error directory does not exist.');
+    errs.push(`The specified google directory does not exist: ${errDir}`);
   }
   if (errs.length !== 0) {
     errs.forEach((e) => console.error(e));
@@ -251,7 +251,7 @@ const fullMigrate = command({
   handler: async ({ takeoutDir, timeout }) => {
     const errs: string[] = [];
     if (!existsSync(takeoutDir)) {
-      errs.push('The specified takeout directory does not exist.');
+      errs.push(`The specified takeout directory does not exist: ${takeoutDir}`);
     }
     if (errs.length !== 0) {
       errs.forEach((e) => console.error(e));
@@ -315,13 +315,13 @@ const folderMigrate = command({
   handler: async ({ googleDir, outputDir, errorDir, force, timeout }) => {
     const errs: string[] = [];
     if (!existsSync(googleDir)) {
-      errs.push('The specified google directory does not exist.');
+      errs.push(`The specified google directory does not exist: ${googleDir}`);
     }
     if (!existsSync(outputDir)) {
-      errs.push('The specified output directory does not exist.');
+      errs.push(`The specified output directory does not exist: ${googleDir}`);
     }
     if (!existsSync(errorDir)) {
-      errs.push('The specified error directory does not exist.');
+      errs.push(`The specified error directory does not exist: ${googleDir}`);
     }
     if (errs.length !== 0) {
       errs.forEach((e) => console.error(e));

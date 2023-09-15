@@ -16,7 +16,7 @@ If you wish to migrate a single folder from a Google Photos takeout file:
 ```bash
 mkdir output error
 
-npx google-photos-migrate@latest migrateFolder '/path/to/takeout/Google Fotos' './output' './error' --timeout 60000
+npx google-photos-migrate@latest fullMigrate '/path/to/takeout/Google Fotos' './output' './error' --timeout 60000
 ```
 
 If you wish to migrate an entire takeout folder:
@@ -24,7 +24,7 @@ If you wish to migrate an entire takeout folder:
 ```bash
 mkdir output error
 
-npx google-photos-migrate@latest migrateFolder '/path/to/takeout/' --timeout 60000
+npx google-photos-migrate@latest folderMigrate '/path/to/takeout/' --timeout 60000
 ```
 
 The processed folders will be automatically put in `/path/to/takeout/Google Photos[Fotos]/PhotosProcessed` & `/path/to/takeout/Google Photos[Fotos]/AlbumsProcessed`.
