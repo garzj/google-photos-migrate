@@ -18,12 +18,14 @@ mkdir output error
 
 npx google-photos-migrate@latest fullMigrate '/path/to/takeout/Google Fotos' './output' './error' --timeout 60000
 ```
+
 Optional flags for folder takeout:
+
 ```
---timeout integer 
+--timeout integer
     Shorthand: -t integer
     Meaning: Sets the timeout for exiftool, default is 30000 (30s)
---force 
+--force
     Shorthand: -f
     Meaning: Forces the migration and overwrites files in the target directory.
 ```
@@ -35,9 +37,11 @@ mkdir output error
 
 npx google-photos-migrate@latest folderMigrate '/path/to/takeout/' --timeout 60000
 ```
+
 Optional flags for full takeout:
+
 ```
---timeout integer 
+--timeout integer
     Shorthand: -t integer
     Meaning: Sets the timeout for exiftool, default is 30000 (30s)
 --untitled
@@ -77,13 +81,16 @@ Configured in [extensions.ts](./src/config/extensions.ts):
 - `.webm`
 
 ## Development
+
 **Prerec**: Must have node 18 & yarn installed.
 
 For basic deployment do the following:
+
 ```bash
 git clone https://github.com/garzj/google-photos-migrate
-yarn 
+yarn
 yarn build
 yarn start <subcommand>
 ```
+
 The entrypoint into the codebase is `src/cli.ts`

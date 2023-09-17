@@ -18,8 +18,6 @@ import { ExifTool } from 'exiftool-vendored';
 import { glob } from 'glob';
 import { basename } from 'path';
 import path = require('path');
-import { inferLikelyOffsetMinutes } from 'exiftool-vendored/dist/Timezones';
-
 
 async function runBasicMigration(
   googleDir: string,
@@ -82,28 +80,29 @@ async function runMigrationsChecked(
     const errFiles: string[] = await glob(`${errDir}/*`);
     const exifTool = new ExifTool({ taskTimeoutMillis: timeout });
     for (let file of errFiles) {
-      if (file.endsWith(".json")){
-        console.log(`Cannot fix metadata for ${file} as .json is an unsupported file type.`);
+      if (file.endsWith('.json')) {
+        console.log(
+          `Cannot fix metadata for ${file} as .json is an unsupported file type.`
+        );
         continue;
       }
-      console.log(`Rewriting all tags from ${file}, to  ${path.join(albumDir, `cleaned-${basename(file)}`)}`);
-      await exifTool.rewriteAllTags(file, path.join(albumDir, `cleaned-${basename(file)}`));
+      console.log(
+        `Rewriting all tags from ${file}, to  ${path.join(
+          albumDir,
+          `cleaned-${basename(file)}`
+        )}`
+      );
+      await exifTool.rewriteAllTags(
+        file,
+        path.join(albumDir, `cleaned-${basename(file)}`)
+      );
     }
     exifTool.end();
-    await runMigrationsChecked(
-      albumDir,
-      outDir,
-      errDir,
-      timeout,
-      false
-    );
+    await runMigrationsChecked(albumDir, outDir, errDir, timeout, false);
   }
 }
 
-async function processAlbums(
-  rootDir: string,
-  timeout: number,
-) {
+async function processAlbums(rootDir: string, timeout: number) {
   const globStr: string = `${rootDir}/Albums/*/`;
   const albums: string[] = await glob(globStr);
   if (albums.length == 0) {
@@ -114,56 +113,47 @@ async function processAlbums(
     let albumName = basename(album);
     let outDir = `${rootDir}/AlbumsProcessed/${albumName}`;
     let errDir = `${rootDir}/AlbumsError/${albumName}`;
-    mkdirSync(album, {recursive: true});
-    mkdirSync(outDir, {recursive: true});
-    mkdirSync(errDir, {recursive: true});
-    await runMigrationsChecked(
-      album,
-      outDir,
-      errDir,
-      timeout,
-      true
-    );
+    mkdirSync(album, { recursive: true });
+    mkdirSync(outDir, { recursive: true });
+    mkdirSync(errDir, { recursive: true });
+    await runMigrationsChecked(album, outDir, errDir, timeout, true);
   }
 }
 
-async function processPhotos(
-  rootDir: string,
-  timeout: number,
-) {
+async function processPhotos(rootDir: string, timeout: number) {
   // Also run the exif fix for the photos
   console.log('Processing photos...');
   const albumDir = `${rootDir}/Photos`;
   const outDir = `${rootDir}/PhotosProcessed`;
   const errDir = `${rootDir}/PhotosError`;
-  mkdirSync(albumDir, {recursive: true});
-  mkdirSync(outDir, {recursive: true});
-  mkdirSync(errDir, {recursive: true});
+  mkdirSync(albumDir, { recursive: true });
+  mkdirSync(outDir, { recursive: true });
+  mkdirSync(errDir, { recursive: true });
 
-  await runMigrationsChecked(
-    albumDir,
-    outDir,
-    errDir,
-    timeout,
-    true
-  );
+  await runMigrationsChecked(albumDir, outDir, errDir, timeout, true);
 }
 
-async function _restructureIfNeeded(folders: string[], targetDir: string, untitled: boolean) {
-  if (existsSync(targetDir) && ((await glob(`${targetDir}/*`)).length) > 0){
-    console.log(`${targetDir} exists and is not empty. No restructuring needed.`);
+async function _restructureIfNeeded(
+  folders: string[],
+  targetDir: string,
+  untitled: boolean
+) {
+  if (existsSync(targetDir) && (await glob(`${targetDir}/*`)).length > 0) {
+    console.log(
+      `${targetDir} exists and is not empty. No restructuring needed.`
+    );
     return;
   }
-  console.log(`Starting restructure of ${folders.length} directories`)
-  mkdirSync(targetDir, {recursive: true});
-  for (let folder of folders){
-    if (!untitled && basename(folder).includes("Untitled")){
+  console.log(`Starting restructure of ${folders.length} directories`);
+  mkdirSync(targetDir, { recursive: true });
+  for (let folder of folders) {
+    if (!untitled && basename(folder).includes('Untitled')) {
       continue; // Skips untitled albums if flag is not passed, won't effect /Photos dir
     }
-    console.log(`Copying ${folder} to ${targetDir}/${basename(folder)}`)
-    cpSync(folder, `${targetDir}/${basename(folder)}`, {recursive: true});
+    console.log(`Copying ${folder} to ${targetDir}/${basename(folder)}`);
+    cpSync(folder, `${targetDir}/${basename(folder)}`, { recursive: true });
   }
-  console.log(`Sucsessfully restructured ${folders.length} directories`)
+  console.log(`Sucsessfully restructured ${folders.length} directories`);
 }
 
 async function restructureIfNeeded(rootDir: string, untitled: boolean) {
@@ -180,22 +170,32 @@ async function restructureIfNeeded(rootDir: string, untitled: boolean) {
   const photosDir: string = `${rootDir}/Photos`;
 
   // move the "Photos from $YEAR" directories to Photos/
-  _restructureIfNeeded(await glob(`${rootDir}/Photos from */`), photosDir, untitled);
-  
+  _restructureIfNeeded(
+    await glob(`${rootDir}/Photos from */`),
+    photosDir,
+    untitled
+  );
+
   // move everythingg else to Albums/, so we end up with two top level folders
   const fullSet: Set<string> = new Set(await glob(`${rootDir}/*/`));
-  const photoSet: Set<string> = new Set(await glob(`${rootDir}/Photos from */`));
+  const photoSet: Set<string> = new Set(
+    await glob(`${rootDir}/Photos from */`)
+  );
   photoSet.add(`${rootDir}/Photos`);
   const everythingExceptPhotosDir: string[] = Array.from(
     new Set([...fullSet].filter((x) => !photoSet.has(x)))
   );
-  _restructureIfNeeded(everythingExceptPhotosDir, `${rootDir}/Albums`, untitled);
+  _restructureIfNeeded(
+    everythingExceptPhotosDir,
+    `${rootDir}/Albums`,
+    untitled
+  );
 }
 
 async function runFullMigration(
   rootDir: string,
   timeout: number,
-  untitled: boolean,
+  untitled: boolean
 ) {
   // at least in my takeout, the Takeout folder contains a subfolder
   // Takeout/Google Foto
@@ -229,7 +229,7 @@ const rewriteAllTags = command({
         'Sets the task timeout in milliseconds that will be passed to ExifTool.',
     }),
   },
-  handler: async ({inFile, outFile, timeout}) => {
+  handler: async ({ inFile, outFile, timeout }) => {
     const exifTool = new ExifTool({ taskTimeoutMillis: timeout });
     await exifTool.rewriteAllTags(inFile, outFile);
     exifTool.end();
@@ -264,18 +264,29 @@ const fullMigrate = command({
   handler: async ({ takeoutDir, timeout, untitled }) => {
     const errs: string[] = [];
     if (!existsSync(takeoutDir)) {
-      errs.push(`The specified takeout directory does not exist: ${takeoutDir}`);
+      errs.push(
+        `The specified takeout directory does not exist: ${takeoutDir}`
+      );
     }
     if (await isEmptyDir(takeoutDir)) {
       errs.push('The google directory is empty. Nothing to do.');
     }
-    var rootDir: string = (await glob(`${takeoutDir}/Google*`))[0].replace(/\/+$/, '');
-    if ((await existsSync(`${rootDir}/Photos`)) && !(await isEmptyDir(`${rootDir}/Photos`))) {
+    var rootDir: string = (await glob(`${takeoutDir}/Google*`))[0].replace(
+      /\/+$/,
+      ''
+    );
+    if (
+      (await existsSync(`${rootDir}/Photos`)) &&
+      !(await isEmptyDir(`${rootDir}/Photos`))
+    ) {
       errs.push(
         'The Photos directory is not empty. Please delete it and try again.'
       );
     }
-    if ((await existsSync(`${rootDir}/Photos`)) && !(await isEmptyDir(`${rootDir}/Albums`))) {
+    if (
+      (await existsSync(`${rootDir}/Photos`)) &&
+      !(await isEmptyDir(`${rootDir}/Albums`))
+    ) {
       errs.push(
         'The Albums directory is not empty. Please delete it and try again.'
       );
