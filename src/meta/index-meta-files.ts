@@ -5,8 +5,6 @@ import { editedSuffices } from '../config/langs';
 
 const MAX_BASE_LENGTH = 51;
 
-function trimTitle(title: string) {}
-
 export async function indexJsonFiles(
   googleDir: string
 ): Promise<Map<string, string[]>> {
