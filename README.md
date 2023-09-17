@@ -7,7 +7,7 @@ A tool like [google-photos-exif](https://github.com/mattwilson1024/google-photos
 - tries to match files by the title in their .json file
 - fixes wrong extensions, identified by [ExifTool](https://exiftool.org/)
 - video files won't show up as from 1970
-- works for English and German (for more langs fix [this file](./src/meta/find-meta-file.ts))
+- works for English, German and French (for more langs fix [this file](./src/config/langs.ts))
 
 ## Run this tool
 

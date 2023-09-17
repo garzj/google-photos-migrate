@@ -1,6 +1,7 @@
 import { readFile } from 'fs/promises';
 import { walkDir } from '../fs/walk-dir';
 import { extname } from 'path';
+import { editedSuffices } from '../config/langs';
 
 const MAX_BASE_LENGTH = 51;
 
@@ -27,8 +28,10 @@ export async function indexJsonFiles(
     const woExt = title.slice(0, -ext.length);
     const maxWoExt = MAX_BASE_LENGTH - ext.length;
     potTitles.add(woExt.slice(0, maxWoExt) + ext);
-    potTitles.add((woExt + '-edited').slice(0, maxWoExt) + ext);
-    potTitles.add((woExt + '-bearbeitet').slice(0, maxWoExt) + ext);
+
+    for (const suffix of editedSuffices) {
+      potTitles.add((woExt + `-${suffix}`).slice(0, maxWoExt) + ext);
+    }
 
     for (const potTitle of potTitles) {
       const jsonPaths = titleJsonMap.get(potTitle) ?? [];

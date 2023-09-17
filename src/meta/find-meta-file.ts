@@ -2,6 +2,7 @@ import { basename, dirname } from 'path';
 import { MigrationContext } from '../media/migrate-google-dir';
 import { MediaFileExtension } from '../media/MediaFileExtension';
 import { fileExists } from '../fs/file-exists';
+import { editedSuffices } from '../config/langs';
 
 export async function findMetaFile(
   mediaPath: string,
@@ -50,7 +51,11 @@ export async function findMetaFile(
   };
 
   let base = mediaPath.slice(0, mediaPath.length - ext.suffix.length);
-  base = base.replace(/-(edited|bearbeitet|modifié)$/i, '');
+  for (const suffix of editedSuffices) {
+    const prevLen = base.length;
+    base = base.replace(`-${suffix}`, '');
+    if (prevLen !== base.length) break;
+  }
 
   const potExts: string[] = [];
 
