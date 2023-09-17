@@ -1,4 +1,4 @@
-import { MediaMigrationError } from './MediaMigrationError';
+import { MediaMigrationError } from '../media/MediaMigrationError';
 
 export class NoMetaFileError extends MediaMigrationError {
   toString() {

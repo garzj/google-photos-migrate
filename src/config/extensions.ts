@@ -1,4 +1,4 @@
-import { MetaType } from '../media/MetaType';
+import { MetaType } from '../meta/MetaType';
 import { MediaFileExtension } from '../media/MediaFileExtension';
 
 export const supportedExtensions: MediaFileExtension[] = [
