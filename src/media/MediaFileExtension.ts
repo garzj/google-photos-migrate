@@ -1,4 +1,4 @@
-import { MetaType } from './MetaType';
+import { MetaType } from '../meta/MetaType';
 
 export interface MediaFileExtension {
   suffix: string;

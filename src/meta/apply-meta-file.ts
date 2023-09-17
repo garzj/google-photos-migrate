@@ -1,7 +1,7 @@
 import { WriteTags } from 'exiftool-vendored';
 import { MediaFile } from '../media/MediaFile';
 import { exhaustiveCheck } from '../ts';
-import { MetaType } from '../media/MetaType';
+import { MetaType } from './MetaType';
 import { readFile } from 'fs/promises';
 import { GoogleMetadata } from './GoogleMeta';
 import {
