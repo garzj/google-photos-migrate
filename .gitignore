@@ -6,6 +6,7 @@ error/
 
 # Build
 lib/
+build/
 
 # Env files
 .env

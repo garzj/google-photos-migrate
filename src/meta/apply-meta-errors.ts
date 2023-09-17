@@ -13,7 +13,10 @@ export class ApplyMetaError extends MediaMigrationError {
 }
 
 export class ExifToolError extends ApplyMetaError {
-  constructor(failedMedia: MediaFileInfo, public reason: Error) {
+  constructor(
+    failedMedia: MediaFileInfo,
+    public reason: Error
+  ) {
     super(failedMedia);
   }
 
