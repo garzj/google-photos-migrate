@@ -1,5 +1,5 @@
 import { basename, dirname } from 'path';
-import { MigrationContext } from '../media/migrate-google-dir';
+import { MigrationContext } from '../dir/migrate-flat';
 import { MediaFileExtension } from '../media/MediaFileExtension';
 import { fileExists } from '../fs/file-exists';
 import { editedSuffices } from '../config/langs';

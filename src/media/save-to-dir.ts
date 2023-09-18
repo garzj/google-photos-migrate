@@ -2,7 +2,7 @@ import { basename, resolve } from 'path';
 import { fileExists } from '../fs/file-exists';
 import sanitize = require('sanitize-filename');
 import { copyFile, mkdir, rename } from 'fs/promises';
-import { MigrationContext } from './migrate-google-dir';
+import { MigrationContext } from '../dir/migrate-flat';
 
 async function _saveToDir(
   file: string,
