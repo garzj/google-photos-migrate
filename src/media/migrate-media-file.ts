@@ -1,65 +1,18 @@
-import { walkDir } from '../fs/walk-dir';
 import { basename } from 'path';
 import { findMetaFile } from '../meta/find-meta-file';
 import { MediaFileExtension } from './MediaFileExtension';
 import { MediaFile, MediaFileInfo } from './MediaFile';
 import { applyMetaFile } from '../meta/apply-meta-file';
-import { indexJsonFiles } from './title-json-map';
 import { supportedExtensions } from '../config/extensions';
 import { MediaMigrationError } from './MediaMigrationError';
 import { InvalidExtError } from './InvalidExtError';
 import { NoMetaFileError } from '../meta/NoMetaFileError';
 import { WrongExtensionError } from '../meta/apply-meta-errors';
-import { ExifTool } from 'exiftool-vendored';
 import { readMetaTitle } from '../meta/read-meta-title';
 import { saveToDir } from './save-to-dir';
+import { MigrationContext } from '../dir/migrate-flat';
 
-export type MigrationArgs = {
-  googleDir: string;
-  outputDir: string;
-  errorDir: string;
-  warnLog?: (msg: string) => void;
-  exiftool?: ExifTool;
-  endExifTool?: boolean;
-};
-
-export type MigrationContext = Required<MigrationArgs> & {
-  titleJsonMap: Map<string, string[]>;
-  migrationLocks: Map<string, Promise<string>>;
-};
-
-export async function* migrateGoogleDir(
-  args: MigrationArgs
-): AsyncGenerator<MediaFile | MediaMigrationError> {
-  const wg: (MediaFile | MediaMigrationError)[] = [];
-  for await (const result of migrateGoogleDirGen(args)) {
-    wg.push(result);
-  }
-  return await Promise.all(wg);
-}
-
-export async function* migrateGoogleDirGen(
-  args: MigrationArgs
-): AsyncGenerator<MediaFile | MediaMigrationError> {
-  const migCtx: MigrationContext = {
-    titleJsonMap: await indexJsonFiles(args.googleDir),
-    migrationLocks: new Map(),
-    ...args,
-    exiftool: args.exiftool ?? new ExifTool(),
-    endExifTool: args.endExifTool ?? !args.exiftool,
-    warnLog: args.warnLog ?? (() => {}),
-  };
-
-  for await (const mediaPath of walkDir(args.googleDir)) {
-    if (mediaPath.endsWith('.json')) continue;
-
-    yield migrateMediaFile(mediaPath, migCtx);
-  }
-
-  migCtx.endExifTool && migCtx.exiftool.end();
-}
-
-async function migrateMediaFile(
+export async function migrateMediaFile(
   originalPath: string,
   migCtx: MigrationContext
 ): Promise<MediaFile | MediaMigrationError> {
