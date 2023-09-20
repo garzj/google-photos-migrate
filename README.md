@@ -11,15 +11,18 @@ A tool like [google-photos-exif](https://github.com/mattwilson1024/google-photos
 
 ## Run this tool
 
+### Natively 
+
+**Prerec**: Must have at least node 18 & yarn installed.
+
 If you wish to migrate a single folder from a Google Photos takeout file:
 
 ```bash
 mkdir output error
 
-npx google-photos-migrate@latest fullMigrate '/path/to/takeout/Google Fotos' './output' './error' --timeout 60000
+npx google-photos-migrate@latest folderMigrate '/path/to/takeout/Google Fotos' './output' './error' --timeout 60000
 ```
-
-Optional flags for folder takeout:
+Optional flags for folder takeout (see `--help` for all details):
 
 ```
 --timeout integer
@@ -35,10 +38,10 @@ If you wish to migrate an entire takeout folder:
 ```bash
 mkdir output error
 
-npx google-photos-migrate@latest folderMigrate '/path/to/takeout/' --timeout 60000
+npx google-photos-migrate@latest fullMigrate '/path/to/takeout/'
 ```
 
-Optional flags for full takeout:
+Optional flags for full takeout (see `--help` for all details):
 
 ```
 --timeout integer
@@ -50,6 +53,65 @@ Optional flags for full takeout:
 ```
 
 The processed folders will be automatically put in `/path/to/takeout/Google Photos[Fotos]/PhotosProcessed` & `/path/to/takeout/Google Photos[Fotos]/AlbumsProcessed`.
+
+**WARNING:** The `fullMigrate` command non-destructively modifies your files, which results in 3 nearly complete copies of your Takeout folder by the time it completes successfully: the original, the intermediate metadata-modified files, and the final organized and de-duplicated files.  Make sure you have sufficient disk space for this.
+
+Additional intermediate folders are created as part of this command and in the event of errors will need to be manually removed before retrying. All are under the `/path/to/takeout/Google Photos[Fotos]/` folder:
+```
+Albums
+AlbumsProcessed
+Photos
+PhotosError
+PhotosProcessed
+```
+
+### Docker
+
+**Prerec:** You must have a working `docker` or `podman` install.
+
+A Dockerfile is also provided to make running this tool easier on most hosts.  The image must be built manually (see below), no pre-built images are provided. Using it will by default use only software-based format conversion, hardware accelerated format conversion is beyond these instructions.
+
+**You must build the image yourself (see above), no public pre-built images are provided.**
+
+You must build the image once before you run it:
+```shell
+# get the source code
+git clone https://github.com/garzj/google-photos-migrate
+cd google-photos-migrate
+
+# Build the image. Must be run from within the source code folder.
+docker build -f Dockerfile -t localhost/google-photos-migrate:latest .
+```
+
+To run `folderMigrate`, which requires providing multiple folders:
+```shell
+mkdir output error
+docker run --rm -it --security-opt=label=disable \
+    -v $(readlink -e path/to/takeout):/takeout \
+    -v $(readlink -e ./output):/output \
+    -v $(readlink -e ./error):/error \
+   localhost/google-photos-migrate:latest \
+     folderMigrate '/takeout/Google Fotos' '/output' '/error' --timeout=60000
+```
+
+To run `fullMigrate`, which requires only the Takeout folder:
+```shell
+mkdir output error
+docker run --rm -it -security-opt=label=disable \
+    -v $(readlink -e path/to/takeout):/takeout \
+   localhost/google-photos-migrate:latest \
+     fullMigrate '/takeout' --timeout=60000
+```
+
+All other commands and options are also available. The only difference from running it natively is the lack of (possible) hardware acceleration, and the need to explicitly add any folders the command will need to reference as host-mounts for the container.
+
+For the overall help:
+```shell
+# no folders needed, so keep it simple
+docker run --rm -it --security-opt=label=disable \
+   localhost/google-photos-migrate:latest \
+     --help
+```
 
 ## Further steps
 
