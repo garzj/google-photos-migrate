@@ -44,9 +44,6 @@ Optional flags for full takeout:
 --timeout integer
     Shorthand: -t integer
     Meaning: Sets the timeout for exiftool, default is 30000 (30s)
---untitled
-    Shorthand: -u
-    Meaning: Includes the largely superflous "Untitled" albums in the album migration. Even without this flag being passed, these images should already be included via the photos migration.
 ```
 
 The processed folders will be automatically put in `/path/to/takeout/Google Photos[Fotos]/PhotosProcessed` & `/path/to/takeout/Google Photos[Fotos]/AlbumsProcessed`.
