@@ -28,16 +28,8 @@ export const fullMigrate = command({
       description:
         'Sets the task timeout in milliseconds that will be passed to ExifTool.',
     }),
-    untitled: flag({
-      type: boolean,
-      defaultValue: () => false,
-      short: 'u',
-      long: 'untitled',
-      description:
-        'If passed, the untitled Album Directories will be processed. If not passed they will be ignored.',
-    }),
   },
-  handler: async ({ takeoutDir, timeout, untitled }) => {
+  handler: async ({ takeoutDir, timeout }) => {
     const errs: string[] = [];
     if (!existsSync(takeoutDir)) {
       errs.push(
@@ -72,6 +64,6 @@ export const fullMigrate = command({
       process.exit(1);
     }
 
-    runFullMigration(takeoutDir, timeout, untitled);
+    runFullMigration(takeoutDir, timeout);
   },
 });
