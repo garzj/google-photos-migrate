@@ -1,11 +1,12 @@
 import { ExifTool } from 'exiftool-vendored';
 import { migrateGoogleDirGen } from './migrate-flat';
 
-export async function runBasicMigration(
+export async function migrateSingleFolder(
   googleDir: string,
   outputDir: string,
   errorDir: string,
-  exifTool: ExifTool
+  exifTool: ExifTool,
+  endExifTool: boolean,
 ) {
   console.log(`Started migration.`);
   const migGen = migrateGoogleDirGen({
@@ -14,7 +15,7 @@ export async function runBasicMigration(
     errorDir,
     warnLog: console.error,
     exiftool: exifTool,
-    endExifTool: true,
+    endExifTool: endExifTool,
   });
 
   const counts = { err: 0, suc: 0 };

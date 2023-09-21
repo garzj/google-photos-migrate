@@ -2,7 +2,7 @@ import { command, string, positional, flag, number, option } from 'cmd-ts';
 import { existsSync } from 'fs';
 import { isEmptyDir } from '../fs/is-empty-dir';
 import { ExifTool } from 'exiftool-vendored';
-import { runBasicMigration } from '../dir/migrate-basic';
+import { migrateSingleFolder } from '../dir/migrate-single-folder';
 
 export const folderMigrate = command({
   name: 'google-photos-migrate-folder',
@@ -72,6 +72,6 @@ export const folderMigrate = command({
     }
 
     const exifTool = new ExifTool({ taskTimeoutMillis: timeout });
-    await runBasicMigration(googleDir, outputDir, errorDir, exifTool);
+    await migrateSingleFolder(googleDir, outputDir, errorDir, exifTool, true);
   },
 });

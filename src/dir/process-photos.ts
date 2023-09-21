@@ -1,7 +1,8 @@
 import { mkdirSync } from 'fs';
-import { runMigrationsChecked } from './migrate-checked';
+import { migrateEntireTakoutFolder } from './migrate-entire-takeout-folder';
+import { ExifTool } from 'exiftool-vendored';
 
-export async function processPhotos(rootDir: string, timeout: number) {
+export async function processPhotos(rootDir: string, exifTool: ExifTool) {
   // Also run the exif fix for the photos
   console.log('Processing photos...');
   const albumDir = `${rootDir}/Photos`;
@@ -11,5 +12,5 @@ export async function processPhotos(rootDir: string, timeout: number) {
   mkdirSync(outDir, { recursive: true });
   mkdirSync(errDir, { recursive: true });
 
-  await runMigrationsChecked(albumDir, outDir, errDir, timeout, true);
+  await migrateEntireTakoutFolder(albumDir, outDir, errDir, true, exifTool);
 }
