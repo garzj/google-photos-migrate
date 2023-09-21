@@ -2,11 +2,11 @@ import { MetaType } from '../meta/MetaType';
 import { MediaFileExtension } from '../media/MediaFileExtension';
 
 // The extensions are identified by their suffix (longest match first)
-// A list of aliases will match more .json files (tried in order)
+// A list of aliases will match each .<ext> with .<alias>.json, but also .<alias> with .<ext>.json
 
 const livePhotoAliases = ['.heic', '.jpg', '.jpeg'];
 
-export const supportedExtensions: MediaFileExtension[] = [
+let extensions: MediaFileExtension[] = [
   { suffix: '.jpg', metaType: MetaType.EXIF },
   { suffix: '.jpeg', metaType: MetaType.EXIF },
   { suffix: '.png', metaType: MetaType.EXIF },
@@ -35,3 +35,17 @@ export const supportedExtensions: MediaFileExtension[] = [
     { ...e, suffix: e.suffix.toUpperCase(), aliases },
   ];
 });
+
+// reverse match aliases
+for (const ext of extensions) {
+  for (const alias of ext.aliases ?? []) {
+    const match = extensions.find((ext) => ext.suffix === alias);
+    if (!match) continue;
+    match.aliases ??= [];
+    if (!match.aliases.includes(ext.suffix)) {
+      match.aliases.push(ext.suffix);
+    }
+  }
+}
+
+export const supportedExtensions = extensions;
