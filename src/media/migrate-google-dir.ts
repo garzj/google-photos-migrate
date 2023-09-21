@@ -4,7 +4,7 @@ import { findMetaFile } from '../meta/find-meta-file';
 import { MediaFileExtension } from './MediaFileExtension';
 import { MediaFile, MediaFileInfo } from './MediaFile';
 import { applyMetaFile } from '../meta/apply-meta-file';
-import { indexJsonFiles } from './title-json-map';
+import { indexJsonFiles } from '../meta/index-meta-files';
 import { supportedExtensions } from '../config/extensions';
 import { MediaMigrationError } from './MediaMigrationError';
 import { InvalidExtError } from './InvalidExtError';
