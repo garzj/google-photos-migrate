@@ -16,7 +16,7 @@ If you wish to migrate a single folder from a Google Photos takeout file:
 ```bash
 mkdir output error
 
-npx google-photos-migrate@latest fullMigrate '/path/to/takeout/Google Fotos' './output' './error' --timeout 60000
+npx google-photos-migrate@latest folderMigrate '/path/to/takeout/Google Fotos' './output' './error' --timeout 60000
 ```
 
 Optional flags for folder takeout:
@@ -35,7 +35,7 @@ If you wish to migrate an entire takeout folder:
 ```bash
 mkdir output error
 
-npx google-photos-migrate@latest folderMigrate '/path/to/takeout/' --timeout 60000
+npx google-photos-migrate@latest fullMigrate '/path/to/takeout/' --timeout 60000
 ```
 
 Optional flags for full takeout:
@@ -44,9 +44,6 @@ Optional flags for full takeout:
 --timeout integer
     Shorthand: -t integer
     Meaning: Sets the timeout for exiftool, default is 30000 (30s)
---untitled
-    Shorthand: -u
-    Meaning: Includes the largely superflous "Untitled" albums in the album migration. Even without this flag being passed, these images should already be included via the photos migration.
 ```
 
 The processed folders will be automatically put in `/path/to/takeout/Google Photos[Fotos]/PhotosProcessed` & `/path/to/takeout/Google Photos[Fotos]/AlbumsProcessed`.

@@ -5,7 +5,6 @@ import { basename } from 'path';
 async function _restructureIfNeeded(
   folders: string[],
   targetDir: string,
-  untitled: boolean
 ) {
   if (existsSync(targetDir) && (await glob(`${targetDir}/*`)).length > 0) {
     console.log(
@@ -16,16 +15,20 @@ async function _restructureIfNeeded(
   console.log(`Starting restructure of ${folders.length} directories`);
   mkdirSync(targetDir, { recursive: true });
   for (let folder of folders) {
-    if (!untitled && basename(folder).includes('Untitled')) {
-      continue; // Skips untitled albums if flag is not passed, won't effect /Photos dir
+    // Moves all Untitled(x) directories to one large folder
+    if (basename(folder).includes('Untitled')) { 
+      console.log(`Copying ${folder} to ${targetDir}/Untitled`);
+      cpSync(folder, `${targetDir}/Untitled`, { recursive: true });
+    } else {
+      console.log(`Copying ${folder} to ${targetDir}/${basename(folder)}`);
+      cpSync(folder, `${targetDir}/${basename(folder)}`, { recursive: true });
     }
-    console.log(`Copying ${folder} to ${targetDir}/${basename(folder)}`);
-    cpSync(folder, `${targetDir}/${basename(folder)}`, { recursive: true });
+    
   }
   console.log(`Sucsessfully restructured ${folders.length} directories`);
 }
 
-export async function restructureIfNeeded(rootDir: string, untitled: boolean) {
+export async function restructureIfNeeded(rootDir: string) {
   // before
   // $rootdir/My Album 1
   // $rootdir/My Album 2
@@ -42,7 +45,6 @@ export async function restructureIfNeeded(rootDir: string, untitled: boolean) {
   _restructureIfNeeded(
     await glob(`${rootDir}/Photos from */`),
     photosDir,
-    untitled
   );
 
   // move everythingg else to Albums/, so we end up with two top level folders
@@ -57,6 +59,5 @@ export async function restructureIfNeeded(rootDir: string, untitled: boolean) {
   _restructureIfNeeded(
     everythingExceptPhotosDir,
     `${rootDir}/Albums`,
-    untitled
   );
 }

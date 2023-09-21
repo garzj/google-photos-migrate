@@ -1,9 +1,10 @@
 import { mkdirSync } from 'fs';
 import { glob } from 'glob';
 import { basename } from 'path';
-import { runMigrationsChecked } from './migrate-checked';
+import { migrateEntireTakoutFolder } from './migrate-entire-takeout-folder';
+import { ExifTool } from 'exiftool-vendored';
 
-export async function processAlbums(rootDir: string, timeout: number) {
+export async function processAlbums(rootDir: string, exifTool: ExifTool) {
   const globStr: string = `${rootDir}/Albums/*/`;
   const albums: string[] = await glob(globStr);
   if (albums.length == 0) {
@@ -17,6 +18,6 @@ export async function processAlbums(rootDir: string, timeout: number) {
     mkdirSync(album, { recursive: true });
     mkdirSync(outDir, { recursive: true });
     mkdirSync(errDir, { recursive: true });
-    await runMigrationsChecked(album, outDir, errDir, timeout, true);
+    await migrateEntireTakoutFolder(album, outDir, errDir, true, exifTool);
   }
 }

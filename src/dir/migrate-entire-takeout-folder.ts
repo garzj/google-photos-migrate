@@ -2,15 +2,15 @@ import { existsSync } from 'fs';
 import { glob } from 'glob';
 import { basename, join } from 'path';
 import { ExifTool } from 'exiftool-vendored';
-import { runBasicMigration } from './migrate-basic';
+import { migrateSingleFolder } from './migrate-single-folder';
 import { isEmptyDir } from '../fs/is-empty-dir';
 
-export async function runMigrationsChecked(
+export async function migrateEntireTakoutFolder(
   albumDir: string,
   outDir: string,
   errDir: string,
-  timeout: number,
-  check_errDir: boolean
+  check_errDir: boolean,
+  exifTool: ExifTool
 ) {
   const errs: string[] = [];
   if (!existsSync(albumDir)) {
@@ -27,12 +27,10 @@ export async function runMigrationsChecked(
     process.exit(1);
   }
 
-  const exifTool = new ExifTool({ taskTimeoutMillis: timeout });
-  await runBasicMigration(albumDir, outDir, errDir, exifTool);
+  await migrateSingleFolder(albumDir, outDir, errDir, exifTool, false);
 
   if (check_errDir && !(await isEmptyDir(errDir))) {
     const errFiles: string[] = await glob(`${errDir}/*`);
-    const exifTool = new ExifTool({ taskTimeoutMillis: timeout });
     for (let file of errFiles) {
       if (file.endsWith('.json')) {
         console.log(
@@ -51,7 +49,6 @@ export async function runMigrationsChecked(
         join(albumDir, `cleaned-${basename(file)}`)
       );
     }
-    exifTool.end();
-    await runMigrationsChecked(albumDir, outDir, errDir, timeout, false);
+    await migrateEntireTakoutFolder(albumDir, outDir, errDir, false, exifTool);
   }
 }
