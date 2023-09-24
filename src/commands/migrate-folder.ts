@@ -1,8 +1,8 @@
 import { command, string, positional, flag, number, option } from 'cmd-ts';
-import { existsSync } from 'fs';
 import { isEmptyDir } from '../fs/is-empty-dir';
 import { ExifTool } from 'exiftool-vendored';
 import { migrateSingleFolder } from '../dir/migrate-single-folder';
+import { fileExists } from '../fs/file-exists';
 
 export const folderMigrate = command({
   name: 'google-photos-migrate-folder',
@@ -39,13 +39,14 @@ export const folderMigrate = command({
   },
   handler: async ({ googleDir, outputDir, errorDir, force, timeout }) => {
     const errs: string[] = [];
-    if (!existsSync(googleDir)) {
+
+    if (!(await fileExists(googleDir))) {
       errs.push(`The specified google directory does not exist: ${googleDir}`);
     }
-    if (!existsSync(outputDir)) {
+    if (!(await fileExists(outputDir))) {
       errs.push(`The specified output directory does not exist: ${googleDir}`);
     }
-    if (!existsSync(errorDir)) {
+    if (!(await fileExists(errorDir))) {
       errs.push(`The specified error directory does not exist: ${googleDir}`);
     }
     if (errs.length !== 0) {

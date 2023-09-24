@@ -7,18 +7,23 @@ import {
   option,
   boolean,
 } from 'cmd-ts';
-import { existsSync } from 'fs';
 import { isEmptyDir } from '../fs/is-empty-dir';
 import { glob } from 'glob';
 import { runFullMigration } from '../dir/migrate-full';
+import { fileExists } from '../fs/file-exists';
 
 export const fullMigrate = command({
   name: 'google-photos-migrate-full',
   args: {
-    takeoutDir: positional({
+    sourceDir: positional({
       type: string,
-      displayName: 'takeout_dir',
+      displayName: 'source_dir',
       description: 'The path to your "Takeout" directory.',
+    }),
+    targetDir: positional({
+      type: string,
+      displayName: 'target_dir',
+      description: 'The path where you want the processed directories to go.',
     }),
     timeout: option({
       type: number,
@@ -29,22 +34,22 @@ export const fullMigrate = command({
         'Sets the task timeout in milliseconds that will be passed to ExifTool.',
     }),
   },
-  handler: async ({ takeoutDir, timeout }) => {
+  handler: async ({ sourceDir, targetDir, timeout }) => {
     const errs: string[] = [];
-    if (!existsSync(takeoutDir)) {
+    if (!(await fileExists(sourceDir))) {
       errs.push(
-        `The specified takeout directory does not exist: ${takeoutDir}`
+        `The specified takeout directory does not exist: ${sourceDir}`
       );
     }
-    if (await isEmptyDir(takeoutDir)) {
-      errs.push('The google directory is empty. Nothing to do.');
+    if (await isEmptyDir(sourceDir)) {
+      errs.push('The source directory is empty. Nothing to do.');
     }
-    var rootDir: string = (await glob(`${takeoutDir}/Google*`))[0].replace(
+    const rootDir: string = (await glob(`${sourceDir}/Google*`))[0].replace(
       /\/+$/,
       ''
     );
     if (
-      (await existsSync(`${rootDir}/Photos`)) &&
+      (await fileExists(`${rootDir}/Photos`)) &&
       !(await isEmptyDir(`${rootDir}/Photos`))
     ) {
       errs.push(
@@ -52,7 +57,7 @@ export const fullMigrate = command({
       );
     }
     if (
-      (await existsSync(`${rootDir}/Photos`)) &&
+      (await fileExists(`${rootDir}/Photos`)) &&
       !(await isEmptyDir(`${rootDir}/Albums`))
     ) {
       errs.push(
@@ -64,6 +69,6 @@ export const fullMigrate = command({
       process.exit(1);
     }
 
-    runFullMigration(takeoutDir, timeout);
+    await runFullMigration(sourceDir, targetDir, timeout);
   },
 });

@@ -1,8 +1,8 @@
-import { mkdirSync } from 'fs';
 import { glob } from 'glob';
 import { basename } from 'path';
 import { migrateEntireTakoutFolder } from './migrate-entire-takeout-folder';
 import { ExifTool } from 'exiftool-vendored';
+import { mkdir } from 'fs/promises';
 
 export async function processAlbums(rootDir: string, exifTool: ExifTool) {
   const globStr: string = `${rootDir}/Albums/*/`;
@@ -15,9 +15,9 @@ export async function processAlbums(rootDir: string, exifTool: ExifTool) {
     let albumName = basename(album);
     let outDir = `${rootDir}/AlbumsProcessed/${albumName}`;
     let errDir = `${rootDir}/AlbumsError/${albumName}`;
-    mkdirSync(album, { recursive: true });
-    mkdirSync(outDir, { recursive: true });
-    mkdirSync(errDir, { recursive: true });
+    await mkdir(album, { recursive: true });
+    await mkdir(outDir, { recursive: true });
+    await mkdir(errDir, { recursive: true });
     await migrateEntireTakoutFolder(album, outDir, errDir, true, exifTool);
   }
 }

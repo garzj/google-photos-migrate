@@ -1,4 +1,4 @@
-import { mkdirSync } from 'fs';
+import { mkdir } from 'fs/promises';
 import { migrateEntireTakoutFolder } from './migrate-entire-takeout-folder';
 import { ExifTool } from 'exiftool-vendored';
 
@@ -8,9 +8,9 @@ export async function processPhotos(rootDir: string, exifTool: ExifTool) {
   const albumDir = `${rootDir}/Photos`;
   const outDir = `${rootDir}/PhotosProcessed`;
   const errDir = `${rootDir}/PhotosError`;
-  mkdirSync(albumDir, { recursive: true });
-  mkdirSync(outDir, { recursive: true });
-  mkdirSync(errDir, { recursive: true });
+  await mkdir(albumDir, { recursive: true });
+  await mkdir(outDir, { recursive: true });
+  await mkdir(errDir, { recursive: true });
 
   await migrateEntireTakoutFolder(albumDir, outDir, errDir, true, exifTool);
 }

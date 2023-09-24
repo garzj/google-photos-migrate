@@ -1,9 +1,9 @@
-import { existsSync } from 'fs';
 import { glob } from 'glob';
 import { basename, join } from 'path';
 import { ExifTool } from 'exiftool-vendored';
 import { migrateSingleFolder } from './migrate-single-folder';
 import { isEmptyDir } from '../fs/is-empty-dir';
+import { fileExists } from '../fs/file-exists';
 
 export async function migrateEntireTakoutFolder(
   albumDir: string,
@@ -13,13 +13,13 @@ export async function migrateEntireTakoutFolder(
   exifTool: ExifTool
 ) {
   const errs: string[] = [];
-  if (!existsSync(albumDir)) {
+  if (!(await fileExists(albumDir))) {
     errs.push(`The specified album directory does not exist: ${albumDir}`);
   }
-  if (!existsSync(outDir)) {
+  if (!(await fileExists(outDir))) {
     errs.push(`The specified output directory does not exist: ${outDir}`);
   }
-  if (!existsSync(errDir)) {
+  if (!(await fileExists(errDir))) {
     errs.push(`The specified error directory does not exist: ${errDir}`);
   }
   if (errs.length !== 0) {

@@ -1,12 +1,13 @@
 import { glob } from 'glob';
-import { restructureIfNeeded } from './restructure-if-needed';
+import { restructureAndProcess } from './restructure-and-process';
 import { processPhotos } from './process-photos';
 import { processAlbums } from './process-albums';
-import { existsSync } from 'fs';
 import { ExifTool } from 'exiftool-vendored';
+import { fileExists } from '../fs/file-exists';
 
 export async function runFullMigration(
-  rootDir: string,
+  sourceDirectory: string,
+  processedDirectory: string,
   timeout: number,
 ) {
   // at least in my takeout, the Takeout folder contains a subfolder
@@ -14,14 +15,12 @@ export async function runFullMigration(
   // rootdir refers to that subfolder
   // Can add more language support here in the future
   const exifTool = new ExifTool({ taskTimeoutMillis: timeout });
-  rootDir;
-  if (existsSync(`${rootDir}/Google Photos`)){
-    rootDir = `${rootDir}/Google Photos`;
-  } else if (existsSync(`${rootDir}/Google Fotos`)){
-    rootDir = `${rootDir}/Google Fotos`
+  let googlePhotosDir: string = "";
+  if (await fileExists(`${sourceDirectory}/Google Photos`)){
+    googlePhotosDir = `${sourceDirectory}/Google Photos`;
+  } else if (await fileExists(`${sourceDirectory}/Google Fotos`)){
+    googlePhotosDir = `${sourceDirectory}/Google Fotos`
   }
-  await restructureIfNeeded(rootDir);
-  await processPhotos(rootDir, exifTool);
-  await processAlbums(rootDir, exifTool);
-  exifTool.end();
+  await restructureAndProcess(googlePhotosDir, exifTool);
+  await exifTool.end();
 }
