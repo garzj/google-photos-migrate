@@ -17,6 +17,9 @@ export async function runFullMigration(
     googlePhotosDir = `${sourceDirectory}/Google Photos`;
   } else if (await fileExists(`${sourceDirectory}/Google Fotos`)){
     googlePhotosDir = `${sourceDirectory}/Google Fotos`
+  } else {
+    console.log("No Google Photos (Fotos) directory was found");
+    process.exit(1);
   }
   await restructureAndProcess(googlePhotosDir, targetDirectory, exifTool);
   await exifTool.end();
