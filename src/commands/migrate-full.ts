@@ -9,7 +9,7 @@ import {
 } from 'cmd-ts';
 import { isEmptyDir } from '../fs/is-empty-dir';
 import { glob } from 'glob';
-import { runFullMigration } from '../dir/migrate-full';
+import { migrateFullDirectory } from '../dir/migrate-full';
 import { fileExists } from '../fs/file-exists';
 
 export const fullMigrate = command({
@@ -52,6 +52,6 @@ export const fullMigrate = command({
       process.exit(1);
     }
 
-    await runFullMigration(sourceDir, targetDir, timeout);
+    await migrateFullDirectory(sourceDir, targetDir, timeout);
   },
 });

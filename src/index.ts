@@ -1,8 +1,9 @@
 import './config/env';
 
-import { migrateGoogleDir } from './dir/migrate-flat';
+import { migrateSingleDirectory } from './dir/migrate-flat';
+import { migrateFullDirectory } from './dir/migrate-full';
 import type { MediaFileExtension } from './media/MediaFileExtension';
 import { supportedExtensions } from './config/extensions';
 
-export { migrateGoogleDir, supportedExtensions };
+export { migrateSingleDirectory, migrateFullDirectory, supportedExtensions };
 export type { MediaFileExtension };

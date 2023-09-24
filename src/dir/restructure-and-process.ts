@@ -1,6 +1,5 @@
 import { glob } from 'glob';
 import { basename, dirname } from 'path';
-import { fileExists } from '../fs/file-exists';
 import { mkdir, cp } from 'fs/promises';
 import { ExifTool } from 'exiftool-vendored';
 import { migrateSingleFolderAndCheckErrors } from './migrate-entire-takeout-folder';

@@ -1,8 +1,5 @@
-import { glob } from 'glob';
-import { basename, join } from 'path';
 import { ExifTool } from 'exiftool-vendored';
 import { migrateSingleFolder } from './migrate-single-folder';
-import { isEmptyDir } from '../fs/is-empty-dir';
 import { fileExists } from '../fs/file-exists';
 import { checkErrorDir } from './check-error-dir';
 
