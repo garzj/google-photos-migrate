@@ -1,13 +1,10 @@
-import { glob } from 'glob';
 import { restructureAndProcess } from './restructure-and-process';
-import { processPhotos } from './process-photos';
-import { processAlbums } from './process-albums';
 import { ExifTool } from 'exiftool-vendored';
 import { fileExists } from '../fs/file-exists';
 
 export async function runFullMigration(
   sourceDirectory: string,
-  processedDirectory: string,
+  targetDirectory: string,
   timeout: number,
 ) {
   // at least in my takeout, the Takeout folder contains a subfolder
@@ -21,6 +18,6 @@ export async function runFullMigration(
   } else if (await fileExists(`${sourceDirectory}/Google Fotos`)){
     googlePhotosDir = `${sourceDirectory}/Google Fotos`
   }
-  await restructureAndProcess(googlePhotosDir, exifTool);
+  await restructureAndProcess(googlePhotosDir, targetDirectory, exifTool);
   await exifTool.end();
 }

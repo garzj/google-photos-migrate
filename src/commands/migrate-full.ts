@@ -42,27 +42,10 @@ export const fullMigrate = command({
       );
     }
     if (await isEmptyDir(sourceDir)) {
-      errs.push('The source directory is empty. Nothing to do.');
+      errs.push(`Nothing to do, the source directory is empty: ${sourceDir}`);
     }
-    const rootDir: string = (await glob(`${sourceDir}/Google*`))[0].replace(
-      /\/+$/,
-      ''
-    );
-    if (
-      (await fileExists(`${rootDir}/Photos`)) &&
-      !(await isEmptyDir(`${rootDir}/Photos`))
-    ) {
-      errs.push(
-        'The Photos directory is not empty. Please delete it and try again.'
-      );
-    }
-    if (
-      (await fileExists(`${rootDir}/Photos`)) &&
-      !(await isEmptyDir(`${rootDir}/Albums`))
-    ) {
-      errs.push(
-        'The Albums directory is not empty. Please delete it and try again.'
-      );
+    if ((await fileExists(targetDir)) && !(await isEmptyDir(targetDir))){
+      errs.push(`The target directory is not empty, please delete it and try again: ${targetDir}`);
     }
     if (errs.length !== 0) {
       errs.forEach((e) => console.error(e));

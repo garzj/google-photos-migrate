@@ -4,12 +4,12 @@ import { ExifTool } from 'exiftool-vendored';
 import { migrateSingleFolder } from './migrate-single-folder';
 import { isEmptyDir } from '../fs/is-empty-dir';
 import { fileExists } from '../fs/file-exists';
+import { checkErrorDir } from './check-error-dir';
 
-export async function migrateEntireTakoutFolder(
+export async function migrateSingleFolderAndCheckErrors(
   albumDir: string,
   outDir: string,
   errDir: string,
-  check_errDir: boolean,
   exifTool: ExifTool
 ) {
   const errs: string[] = [];
@@ -28,27 +28,5 @@ export async function migrateEntireTakoutFolder(
   }
 
   await migrateSingleFolder(albumDir, outDir, errDir, exifTool, false);
-
-  if (check_errDir && !(await isEmptyDir(errDir))) {
-    const errFiles: string[] = await glob(`${errDir}/*`);
-    for (let file of errFiles) {
-      if (file.endsWith('.json')) {
-        console.log(
-          `Cannot fix metadata for ${file} as .json is an unsupported file type.`
-        );
-        continue;
-      }
-      console.log(
-        `Rewriting all tags from ${file}, to  ${join(
-          albumDir,
-          `cleaned-${basename(file)}`
-        )}`
-      );
-      await exifTool.rewriteAllTags(
-        file,
-        join(albumDir, `cleaned-${basename(file)}`)
-      );
-    }
-    await migrateEntireTakoutFolder(albumDir, outDir, errDir, false, exifTool);
-  }
+  await checkErrorDir(outDir, errDir, exifTool);
 }
