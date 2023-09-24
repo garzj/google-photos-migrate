@@ -28,6 +28,9 @@
     "sanitize-filename": "^1.6.3",
     "ts-node": "^10.9.1"
   },
+  "resolutions": {
+    "string-width-cjs": "5.1.1"
+  },
   "keywords": [
     "google",
     "photos",
