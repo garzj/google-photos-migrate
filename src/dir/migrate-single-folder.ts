@@ -19,7 +19,6 @@ export async function migrateSingleFolder(
   });
   const counts = { err: 0, suc: 0 };
   for await (const result of migGen) {
-    console.log(result);
     if (result instanceof Error) {
       console.error(`Error: ${result}`);
       counts.err++;
