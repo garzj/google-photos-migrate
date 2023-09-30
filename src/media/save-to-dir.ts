@@ -1,5 +1,5 @@
 import { basename, resolve } from 'path';
-import { fileExists } from '../fs/file-exists';
+import { entitiyExists } from '../fs/entity-exists';
 import sanitize = require('sanitize-filename');
 import { copyFile, mkdir, rename } from 'fs/promises';
 import { MigrationContext } from '../dir/migrate-flat';
@@ -18,7 +18,7 @@ async function _saveToDir(
   await mkdir(saveDir, { recursive: true });
   const savePath = resolve(saveDir, saveBase);
 
-  const exists = await fileExists(savePath);
+  const exists = await entitiyExists(savePath);
   if (exists) {
     return _saveToDir(file, destDir, saveBase, move, duplicateIndex + 1);
   }

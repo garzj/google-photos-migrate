@@ -10,7 +10,7 @@ import {
 import { isEmptyDir } from '../fs/is-empty-dir';
 import { glob } from 'glob';
 import { migrateFullDirectory } from '../dir/migrate-full';
-import { fileExists } from '../fs/file-exists';
+import { entitiyExists } from '../fs/entity-exists';
 
 export const fullMigrate = command({
   name: 'google-photos-migrate-full',
@@ -36,7 +36,7 @@ export const fullMigrate = command({
   },
   handler: async ({ sourceDir, targetDir, timeout }) => {
     const errs: string[] = [];
-    if (!(await fileExists(sourceDir))) {
+    if (!(await entitiyExists(sourceDir))) {
       errs.push(
         `The specified takeout directory does not exist: ${sourceDir}`
       );
@@ -44,7 +44,7 @@ export const fullMigrate = command({
     if (await isEmptyDir(sourceDir)) {
       errs.push(`Nothing to do, the source directory is empty: ${sourceDir}`);
     }
-    if ((await fileExists(targetDir)) && !(await isEmptyDir(targetDir))){
+    if ((await entitiyExists(targetDir)) && !(await isEmptyDir(targetDir))){
       errs.push(`The target directory is not empty, please delete it and try again: ${targetDir}`);
     }
     if (errs.length !== 0) {

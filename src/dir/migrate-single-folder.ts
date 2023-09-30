@@ -17,16 +17,16 @@ export async function migrateSingleFolder(
     exiftool: exifTool,
     endExifTool: endExifTool,
   });
-
   const counts = { err: 0, suc: 0 };
   for await (const result of migGen) {
+    console.log(result);
     if (result instanceof Error) {
       console.error(`Error: ${result}`);
       counts.err++;
       continue;
+    } else {
+      counts.suc++;
     }
-
-    counts.suc++;
   }
 
   console.log(`Done! Processed ${counts.suc + counts.err} files.`);

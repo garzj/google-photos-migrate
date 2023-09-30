@@ -3,7 +3,7 @@ import { isEmptyDir } from '../fs/is-empty-dir';
 import { glob } from 'glob';
 import { basename, join } from 'path';
 import { isDir } from '../fs/is-dir';
-import { fileExists } from '../fs/file-exists';
+import { entitiyExists } from '../fs/entity-exists';
 
 export async function checkErrorDir(
   outDir: string,
@@ -21,7 +21,7 @@ export async function checkErrorDir(
         } else if (await isDir(file)) {
         console.log(`Cannot fix metadata for directory: ${file}`);
         continue;
-      } else if (await fileExists(file)){
+      } else if (await entitiyExists(file)){
         console.log(`File already exists (you can ignore this): ${file}`);
         continue;
       }

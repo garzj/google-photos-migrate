@@ -1,6 +1,6 @@
 import { ExifTool } from 'exiftool-vendored';
 import { migrateSingleFolder } from './migrate-single-folder';
-import { fileExists } from '../fs/file-exists';
+import { entitiyExists } from '../fs/entity-exists';
 import { checkErrorDir } from './check-error-dir';
 
 export async function migrateSingleFolderAndCheckErrors(
@@ -10,18 +10,18 @@ export async function migrateSingleFolderAndCheckErrors(
   exifTool: ExifTool
 ) {
   const errs: string[] = [];
-  if (!(await fileExists(albumDir))) {
+  if (!(await entitiyExists(albumDir))) {
     errs.push(`The specified album directory does not exist: ${albumDir}`);
   }
-  if (!(await fileExists(outDir))) {
+  if (!(await entitiyExists(outDir))) {
     errs.push(`The specified output directory does not exist: ${outDir}`);
   }
-  if (!(await fileExists(errDir))) {
+  if (!(await entitiyExists(errDir))) {
     errs.push(`The specified error directory does not exist: ${errDir}`);
   }
   if (errs.length !== 0) {
     errs.forEach((e) => console.error(e));
-    process.exit(1);
+    throw(Error(`Specified output directories don't exist: ${errs}`));
   }
 
   await migrateSingleFolder(albumDir, outDir, errDir, exifTool, false);
