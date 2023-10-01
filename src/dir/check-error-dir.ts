@@ -14,9 +14,6 @@ export async function checkErrorDir(
     const errFiles: string[] = await glob(`${errDir}/*`);
     for (let file of errFiles) {
       if (file.endsWith('.json')) {
-        console.log(
-          `Cannot fix metadata for ${file} as .json is an unsupported file type.`
-        );
         continue;
         } else if (await isDir(file)) {
         console.log(`Cannot fix metadata for directory: ${file}`);
