@@ -62,14 +62,14 @@ export async function restructureAndProcess(
   exifTool: ExifTool
 ) {
   // before
-  // $rootdir/My Album 1
-  // $rootdir/My Album 2
-  // $rootdir/Photos from 2008
+  // $rootdir/My Album 1/*
+  // $rootdir/My Album 2/*
+  // $rootdir/Photos from 2008/*
 
   // after
-  // $rootdir/Albums/My Album 1
-  // $rootdir/Albums/My Album 2
-  // $rootdir/Photos/Photos from 2008
+  // $rootdir/AlbumsProcessed/My Album 1/*
+  // $rootdir/AlbumsProcessed/My Album 2/*
+  // $rootdir/PhotosProcessed/*
 
   console.log('Processing photos...');
 
