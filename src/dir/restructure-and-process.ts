@@ -2,18 +2,20 @@ import { glob } from 'glob';
 import { basename, dirname } from 'path';
 import { mkdir, cp } from 'fs/promises';
 import { ExifTool } from 'exiftool-vendored';
-import { migrateSingleFolderAndCheckErrors } from './migrate-entire-takeout-folder';
+import { migrateSingleFolder } from './migrate-single-folder';
+import { checkErrorDir } from './check-error-dir';
+import path = require('path');
 
 async function _restructureAndProcess(
   folders: string[],
   targetDir: string,
-  processingType: boolean, // true for Albums, false for Photos
+  processingAlbums: boolean, // true for Albums, false for Photos
   exifTool: ExifTool
 ) {
   console.log(`Starting restructure of ${folders.length} directories`);
   await mkdir(targetDir, { recursive: true });
   for (let folder of folders) {
-    if (processingType) {
+    if (processingAlbums) {
       // true for Albums, false for Photos
       console.log(`Processing album ${folder}...`);
       let outDir = `${targetDir}/AlbumsProcessed/${basename(folder)}`;
@@ -24,15 +26,33 @@ async function _restructureAndProcess(
       }
       await mkdir(outDir, { recursive: true });
       await mkdir(errDir, { recursive: true });
-      await migrateSingleFolderAndCheckErrors(folder, outDir, errDir, exifTool);
+      await migrateSingleFolder(folder, outDir, errDir, exifTool, false);
     } else {
       const outDir = `${targetDir}/PhotosProcessed`;
       const errDir = `${targetDir}/PhotosError`;
       await mkdir(outDir, { recursive: true });
       await mkdir(errDir, { recursive: true });
-      await migrateSingleFolderAndCheckErrors(folder, outDir, errDir, exifTool);
+      await migrateSingleFolder(folder, outDir, errDir, exifTool, false);
     }
   }
+
+  // check for errors
+  if (!processingAlbums) {
+    const outDir = `${targetDir}/PhotosProcessed`;
+    const errDir = `${targetDir}/PhotosError`;
+    await checkErrorDir(outDir, errDir, exifTool);
+  } else {
+    const outDir = `${targetDir}/AlbumsProcessed`;
+    const errDir = `${targetDir}/AlbumsError`;
+    const errAlbumDirs = await glob(errDir);
+    for (let dir of errAlbumDirs) {
+      if (dir == errDir) {
+        continue;
+      }
+      await checkErrorDir(dir, path.join(outDir, basename(dir)), exifTool);
+    }
+  }
+
   console.log(`Sucsessfully restructured ${folders.length} directories`);
 }
 
@@ -52,7 +72,6 @@ export async function restructureAndProcess(
   // $rootdir/Photos/Photos from 2008
 
   console.log('Processing photos...');
-
 
   // move the "Photos from $YEAR" directories to Photos/
   await _restructureAndProcess(

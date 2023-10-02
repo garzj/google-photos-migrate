@@ -19,7 +19,6 @@ export async function checkErrorDir(
         console.log(`Cannot fix metadata for directory: ${file}`);
         continue;
       } else if (await entitiyExists(file)){
-        console.log(`File already exists (you can ignore this): ${file}`);
         continue;
       }
       console.log(

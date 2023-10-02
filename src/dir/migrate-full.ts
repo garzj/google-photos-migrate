@@ -1,5 +1,5 @@
 import { restructureAndProcess } from './restructure-and-process';
-import { ExifTool } from 'exiftool-vendored';
+import { ExifTool, exiftool } from 'exiftool-vendored';
 import { entitiyExists } from '../fs/entity-exists';
 import { possiblePhotosLocations } from '../config/langs';
 
@@ -12,8 +12,8 @@ export async function migrateFullDirectory(
   // Takeout/Google Foto
   // rootdir refers to that subfolder
   // Can add more language support here in the future
+  const exifTool = new ExifTool({ taskTimeoutMillis: timeout });
   try {
-    const exifTool = new ExifTool({ taskTimeoutMillis: timeout });
     let googlePhotosDir: string = '';
     for (let i of possiblePhotosLocations) {
       if (await entitiyExists(`${sourceDirectory}/${i}`)) {
@@ -25,8 +25,10 @@ export async function migrateFullDirectory(
       return new Error('No Google Photos (Fotos) directory was found');
     }
     await restructureAndProcess(googlePhotosDir, targetDirectory, exifTool);
-    await exifTool.end();
+    exifTool.end();
   } catch (e){
+    exifTool.end();
+    console.error(e);
     return new Error(`Error while migrating: ${e}`);
   }
   return;
