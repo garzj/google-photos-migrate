@@ -11,7 +11,7 @@
       "jsx": true
     }
   },
-  "plugins": ["only-warn", "@typescript-eslint/eslint-plugin"],
+  "plugins": ["@typescript-eslint/eslint-plugin"],
   "rules": {
     "@typescript-eslint/no-unused-vars": 0,
     "@typescript-eslint/no-explicit-any": 0,
