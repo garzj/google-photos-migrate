@@ -14,7 +14,7 @@ async function _restructureAndProcess(
 ) {
   console.log(`Starting restructure of ${folders.length} directories`);
   await mkdir(targetDir, { recursive: true });
-  for (let folder of folders) {
+  for (const folder of folders) {
     if (processingAlbums) {
       // true for Albums, false for Photos
       console.log(`Processing album ${folder}...`);
@@ -45,7 +45,7 @@ async function _restructureAndProcess(
     const outDir = `${targetDir}/AlbumsProcessed`;
     const errDir = `${targetDir}/AlbumsError`;
     const errAlbumDirs = await glob(errDir);
-    for (let dir of errAlbumDirs) {
+    for (const dir of errAlbumDirs) {
       if (dir == errDir) {
         continue;
       }

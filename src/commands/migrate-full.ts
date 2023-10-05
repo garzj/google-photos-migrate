@@ -37,15 +37,15 @@ export const fullMigrate = command({
   handler: async ({ sourceDir, targetDir, timeout }) => {
     const errs: string[] = [];
     if (!(await entitiyExists(sourceDir))) {
-      errs.push(
-        `The specified takeout directory does not exist: ${sourceDir}`
-      );
+      errs.push(`The specified takeout directory does not exist: ${sourceDir}`);
     }
     if (await isEmptyDir(sourceDir)) {
       errs.push(`Nothing to do, the source directory is empty: ${sourceDir}`);
     }
-    if ((await entitiyExists(targetDir)) && !(await isEmptyDir(targetDir))){
-      errs.push(`The target directory is not empty, please delete it and try again: ${targetDir}`);
+    if ((await entitiyExists(targetDir)) && !(await isEmptyDir(targetDir))) {
+      errs.push(
+        `The target directory is not empty, please delete it and try again: ${targetDir}`
+      );
     }
     if (errs.length !== 0) {
       errs.forEach((e) => console.error(e));

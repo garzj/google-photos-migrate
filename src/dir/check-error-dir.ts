@@ -12,13 +12,13 @@ export async function checkErrorDir(
 ) {
   if (!(await isEmptyDir(errDir))) {
     const errFiles: string[] = await glob(`${errDir}/*`);
-    for (let file of errFiles) {
+    for (const file of errFiles) {
       if (file.endsWith('.json')) {
         continue;
-        } else if (await isDir(file)) {
+      } else if (await isDir(file)) {
         console.log(`Cannot fix metadata for directory: ${file}`);
         continue;
-      } else if (await entitiyExists(file)){
+      } else if (await entitiyExists(file)) {
         continue;
       }
       console.log(

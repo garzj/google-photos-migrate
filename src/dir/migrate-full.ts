@@ -7,7 +7,7 @@ export async function migrateFullDirectory(
   sourceDirectory: string,
   targetDirectory: string,
   timeout: number
-): Promise< Error | void > {
+): Promise<Error | void> {
   // at least in my takeout, the Takeout folder contains a subfolder
   // Takeout/Google Foto
   // rootdir refers to that subfolder
@@ -15,7 +15,7 @@ export async function migrateFullDirectory(
   const exifTool = new ExifTool({ taskTimeoutMillis: timeout });
   try {
     let googlePhotosDir: string = '';
-    for (let i of possiblePhotosLocations) {
+    for (const i of possiblePhotosLocations) {
       if (await entitiyExists(`${sourceDirectory}/${i}`)) {
         googlePhotosDir = `${sourceDirectory}/${i}`;
         break;
@@ -26,7 +26,7 @@ export async function migrateFullDirectory(
     }
     await restructureAndProcess(googlePhotosDir, targetDirectory, exifTool);
     exifTool.end();
-  } catch (e){
+  } catch (e) {
     exifTool.end();
     console.error(e);
     return new Error(`Error while migrating: ${e}`);
