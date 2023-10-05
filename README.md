@@ -8,6 +8,7 @@ A tool like [google-photos-exif](https://github.com/mattwilson1024/google-photos
 - fixes wrong extensions, identified by [ExifTool](https://exiftool.org/)
 - video files won't show up as from 1970
 - works for English, German and French (for more langs fix [this file](./src/config/langs.ts))
+- supported extensions can be found and configured in [extensions.ts](./src/config/extensions.ts)
 
 ## Run this tool
 
@@ -114,30 +115,6 @@ docker run --rm -it --security-opt=label=disable \
 
 - If you use Linux + Android, you might want to check out the scripts I used to locate duplicate media and keep the better versions in the [android-dups](./android-dups/) directory.
 - Use a tool like [Immich](https://github.com/immich-app/immich) and upload your photos
-
-## Supported extensions
-
-Configured in [extensions.ts](./src/config/extensions.ts):
-
-- `.jpg`
-- `.jpeg`
-- `.png`
-- `.raw`
-- `.ico`
-- `.tiff`
-- `.webp`
-- `.heic`
-- `.heif`
-- `.gif`
-- `.mp4`
-- `.mov`
-- `.qt`
-- `.mov.qt`
-- `.3gp`
-- `.mp4v`
-- `.mkv`
-- `.wmv`
-- `.webm`
 
 ## Development
 
