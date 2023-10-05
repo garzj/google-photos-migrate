@@ -19,9 +19,9 @@ export type MigrationContext = Required<MigrationArgs> & {
   migrationLocks: Map<string, Promise<string>>;
 };
 
-export async function* migrateSingleDirectory(
+export async function migrateSingleDirectory(
   args: MigrationArgs
-): AsyncGenerator<MediaFile | MediaMigrationError> {
+): Promise<(MediaFile | MediaMigrationError)[]> {
   const wg: (MediaFile | MediaMigrationError)[] = [];
   for await (const result of migrateSingleDirectoryGen(args)) {
     wg.push(result);

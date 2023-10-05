@@ -1,5 +1,5 @@
 import { ExifTool } from 'exiftool-vendored';
-import { migrateSingleDirectory } from './migrate-flat';
+import { migrateSingleDirectoryGen } from './migrate-flat';
 
 export async function migrateSingleFolder(
   googleDir: string,
@@ -9,7 +9,7 @@ export async function migrateSingleFolder(
   endExifTool: boolean
 ) {
   console.log(`Started migration.`);
-  const migGen = migrateSingleDirectory({
+  const migGen = migrateSingleDirectoryGen({
     googleDir,
     outputDir,
     errorDir,
