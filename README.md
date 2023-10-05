@@ -38,7 +38,7 @@ If you wish to migrate an entire takeout folder:
 ```bash
 mkdir output error
 
-npx google-photos-migrate@latest fullMigrate '/path/to/takeout/' --timeout 60000
+npx google-photos-migrate@latest fullMigrate '/path/to/takeout' '/path/to/target' --timeout 60000
 ```
 
 Optional flags for full takeout (see `--help` for all details):

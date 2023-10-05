@@ -19,17 +19,17 @@ export type MigrationContext = Required<MigrationArgs> & {
   migrationLocks: Map<string, Promise<string>>;
 };
 
-export async function* migrateGoogleDir(
+export async function* migrateSingleDirectory(
   args: MigrationArgs
 ): AsyncGenerator<MediaFile | MediaMigrationError> {
   const wg: (MediaFile | MediaMigrationError)[] = [];
-  for await (const result of migrateGoogleDirGen(args)) {
+  for await (const result of migrateSingleDirectoryGen(args)) {
     wg.push(result);
   }
   return await Promise.all(wg);
 }
 
-export async function* migrateGoogleDirGen(
+export async function* migrateSingleDirectoryGen(
   args: MigrationArgs
 ): AsyncGenerator<MediaFile | MediaMigrationError> {
   const migCtx: MigrationContext = {

@@ -7,18 +7,23 @@ import {
   option,
   boolean,
 } from 'cmd-ts';
-import { existsSync } from 'fs';
 import { isEmptyDir } from '../fs/is-empty-dir';
 import { glob } from 'glob';
-import { runFullMigration } from '../dir/migrate-full';
+import { migrateFullDirectory } from '../dir/migrate-full';
+import { entitiyExists } from '../fs/entity-exists';
 
 export const fullMigrate = command({
   name: 'google-photos-migrate-full',
   args: {
-    takeoutDir: positional({
+    sourceDir: positional({
       type: string,
-      displayName: 'takeout_dir',
+      displayName: 'source_dir',
       description: 'The path to your "Takeout" directory.',
+    }),
+    targetDir: positional({
+      type: string,
+      displayName: 'target_dir',
+      description: 'The path where you want the processed directories to go.',
     }),
     timeout: option({
       type: number,
@@ -29,41 +34,24 @@ export const fullMigrate = command({
         'Sets the task timeout in milliseconds that will be passed to ExifTool.',
     }),
   },
-  handler: async ({ takeoutDir, timeout }) => {
+  handler: async ({ sourceDir, targetDir, timeout }) => {
     const errs: string[] = [];
-    if (!existsSync(takeoutDir)) {
+    if (!(await entitiyExists(sourceDir))) {
       errs.push(
-        `The specified takeout directory does not exist: ${takeoutDir}`
+        `The specified takeout directory does not exist: ${sourceDir}`
       );
     }
-    if (await isEmptyDir(takeoutDir)) {
-      errs.push('The google directory is empty. Nothing to do.');
+    if (await isEmptyDir(sourceDir)) {
+      errs.push(`Nothing to do, the source directory is empty: ${sourceDir}`);
     }
-    var rootDir: string = (await glob(`${takeoutDir}/Google*`))[0].replace(
-      /\/+$/,
-      ''
-    );
-    if (
-      (await existsSync(`${rootDir}/Photos`)) &&
-      !(await isEmptyDir(`${rootDir}/Photos`))
-    ) {
-      errs.push(
-        'The Photos directory is not empty. Please delete it and try again.'
-      );
-    }
-    if (
-      (await existsSync(`${rootDir}/Photos`)) &&
-      !(await isEmptyDir(`${rootDir}/Albums`))
-    ) {
-      errs.push(
-        'The Albums directory is not empty. Please delete it and try again.'
-      );
+    if ((await entitiyExists(targetDir)) && !(await isEmptyDir(targetDir))){
+      errs.push(`The target directory is not empty, please delete it and try again: ${targetDir}`);
     }
     if (errs.length !== 0) {
       errs.forEach((e) => console.error(e));
       process.exit(1);
     }
 
-    runFullMigration(takeoutDir, timeout);
+    await migrateFullDirectory(sourceDir, targetDir, timeout);
   },
 });

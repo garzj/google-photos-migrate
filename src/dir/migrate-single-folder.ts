@@ -1,15 +1,15 @@
 import { ExifTool } from 'exiftool-vendored';
-import { migrateGoogleDirGen } from './migrate-flat';
+import { migrateSingleDirectory } from './migrate-flat';
 
 export async function migrateSingleFolder(
   googleDir: string,
   outputDir: string,
   errorDir: string,
   exifTool: ExifTool,
-  endExifTool: boolean,
+  endExifTool: boolean
 ) {
   console.log(`Started migration.`);
-  const migGen = migrateGoogleDirGen({
+  const migGen = migrateSingleDirectory({
     googleDir,
     outputDir,
     errorDir,
@@ -17,16 +17,15 @@ export async function migrateSingleFolder(
     exiftool: exifTool,
     endExifTool: endExifTool,
   });
-
   const counts = { err: 0, suc: 0 };
   for await (const result of migGen) {
     if (result instanceof Error) {
       console.error(`Error: ${result}`);
       counts.err++;
       continue;
+    } else {
+      counts.suc++;
     }
-
-    counts.suc++;
   }
 
   console.log(`Done! Processed ${counts.suc + counts.err} files.`);
