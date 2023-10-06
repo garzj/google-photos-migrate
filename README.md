@@ -16,6 +16,8 @@ A tool like [google-photos-exif](https://github.com/mattwilson1024/google-photos
 
 **Prerec**: Must have at least node 18 & yarn installed.
 
+#### Flat migration
+
 If you wish to migrate a single folder from a Google Photos takeout file (or flatten the entire Takout folder into a single output with no album hierarchy):
 
 ```bash
@@ -24,16 +26,7 @@ mkdir output error
 npx google-photos-migrate@latest folderMigrate '/path/to/takeout/Google Fotos' './output' './error' --timeout 60000
 ```
 
-Optional flags for folder takeout (see `--help` for all details):
-
-```
---timeout integer
-    Shorthand: -t integer
-    Meaning: Sets the timeout for exiftool, default is 30000 (30s)
---force
-    Shorthand: -f
-    Meaning: Forces the migration and overwrites files in the target directory.
-```
+#### Structured migration
 
 If you wish to migrate an entire takeout folder (and keep the album directory structure):
 
@@ -41,14 +34,6 @@ If you wish to migrate an entire takeout folder (and keep the album directory st
 mkdir output error
 
 npx google-photos-migrate@latest fullMigrate '/path/to/takeout' '/path/to/target' --timeout 60000
-```
-
-Optional flags for full takeout (see `--help` for all details):
-
-```
---timeout integer
-    Shorthand: -t integer
-    Meaning: Sets the timeout for exiftool, default is 30000 (30s)
 ```
 
 In the target directory, four sub-directories are created:
@@ -61,6 +46,17 @@ AlbumsError
 ```
 
 If all goes well you can ignore the error directories and just use the output in the \*Processed dirs.
+
+#### Optional flags (see `--help` for all details):
+
+```
+--timeout integer
+    Shorthand: -t integer
+    Meaning: Sets the timeout for exiftool, default is 30000 (30s)
+--force
+    Shorthand: -f
+    Meaning: Forces the migration and overwrites files in the target directory.
+```
 
 ### Docker
 

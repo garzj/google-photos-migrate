@@ -1,8 +1,9 @@
-import { command, string, positional, flag, number, option } from 'cmd-ts';
+import { command, string, positional } from 'cmd-ts';
 import { isEmptyDir } from '../fs/is-empty-dir';
 import { ExifTool } from 'exiftool-vendored';
 import { migrateSingleFolder } from '../dir/migrate-single-folder';
 import { entitiyExists } from '../fs/entity-exists';
+import { forceArg, timeoutArg } from './common';
 
 export const folderMigrate = command({
   name: 'google-photos-migrate-folder',
@@ -22,23 +23,17 @@ export const folderMigrate = command({
       displayName: 'error_dir',
       description: 'Failed media will be saved here.',
     }),
-    force: flag({
-      short: 'f',
-      long: 'force',
-      description:
-        "Forces the operation if the given directories aren't empty.",
-    }),
-    timeout: option({
-      type: number,
-      defaultValue: () => 30000,
-      short: 't',
-      long: 'timeout',
-      description:
-        'Sets the task timeout in milliseconds that will be passed to ExifTool.',
-    }),
+    force: forceArg,
+    timeout: timeoutArg,
   },
   handler: async ({ googleDir, outputDir, errorDir, force, timeout }) => {
     const errs: string[] = [];
+    const checkErrs = () => {
+      if (errs.length !== 0) {
+        errs.forEach((e) => console.error(e));
+        process.exit(1);
+      }
+    };
 
     if (!(await entitiyExists(googleDir))) {
       errs.push(`The specified google directory does not exist: ${googleDir}`);
@@ -49,10 +44,7 @@ export const folderMigrate = command({
     if (!(await entitiyExists(errorDir))) {
       errs.push(`The specified error directory does not exist: ${googleDir}`);
     }
-    if (errs.length !== 0) {
-      errs.forEach((e) => console.error(e));
-      process.exit(1);
-    }
+    checkErrs();
 
     if (!force && !(await isEmptyDir(outputDir))) {
       errs.push(
@@ -65,12 +57,9 @@ export const folderMigrate = command({
       );
     }
     if (await isEmptyDir(googleDir)) {
-      errs.push('The google directory is empty. Nothing to do.');
+      errs.push(`Nothing to do, the source directory is empty: ${googleDir}`);
     }
-    if (errs.length !== 0) {
-      errs.forEach((e) => console.error(e));
-      process.exit(1);
-    }
+    checkErrs();
 
     const exifTool = new ExifTool({ taskTimeoutMillis: timeout });
     await migrateSingleFolder(googleDir, outputDir, errorDir, exifTool, true);
