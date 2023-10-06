@@ -16,16 +16,6 @@ A tool like [google-photos-exif](https://github.com/mattwilson1024/google-photos
 
 **Prerec**: Must have at least node 18 & yarn installed.
 
-#### Flat migration
-
-If you wish to migrate a single folder from a Google Photos takeout file (or flatten the entire Takout folder into a single output with no album hierarchy):
-
-```bash
-mkdir output error
-
-npx google-photos-migrate@latest flat '/path/to/takeout/Google Photos' './output' './error' --timeout 60000
-```
-
 #### Full structured migration
 
 If you wish to migrate an entire takeout folder (and keep the album directory structure):
@@ -37,6 +27,16 @@ npx google-photos-migrate@latest full '/path/to/takeout' './output' './error' --
 ```
 
 The folder names in the `output` and `error` directories will now correspond to the original album names.
+
+#### Flat migration
+
+If you wish to migrate your Google Photos folder into a flat directory (and don't care about albums):
+
+```bash
+mkdir output error
+
+npx google-photos-migrate@latest flat '/path/to/takeout/Google Photos' './output' './error' --timeout 60000
+```
 
 #### Optional flags (see `--help` for all details):
 
@@ -65,18 +65,6 @@ cd google-photos-migrate
 docker build -f Dockerfile -t localhost/google-photos-migrate:latest .
 ```
 
-To run the flat migration:
-
-```shell
-mkdir output error
-docker run --rm -it --security-opt=label=disable \
-    -v $(readlink -e path/to/takeout):/takeout \
-    -v $(readlink -e ./output):/output \
-    -v $(readlink -e ./error):/error \
-   localhost/google-photos-migrate:latest \
-     flat '/takeout/Google Fotos' '/output' '/error' --timeout=60000
-```
-
 To run the full migration:
 
 ```shell
@@ -87,6 +75,18 @@ docker run --rm -it -security-opt=label=disable \
     -v $(readlink -e ./error):/error \
    localhost/google-photos-migrate:latest \
      fullMigrate '/takeout' '/output' '/error' --timeout=60000
+```
+
+To run the flat migration:
+
+```shell
+mkdir output error
+docker run --rm -it --security-opt=label=disable \
+    -v $(readlink -e path/to/takeout):/takeout \
+    -v $(readlink -e ./output):/output \
+    -v $(readlink -e ./error):/error \
+   localhost/google-photos-migrate:latest \
+     flat '/takeout/Google Fotos' '/output' '/error' --timeout=60000
 ```
 
 All other options are also available. The only difference from running it natively is the lack of (possible) hardware acceleration, and the need to explicitly add any folders the command will need to reference as host-mounts for the container.
