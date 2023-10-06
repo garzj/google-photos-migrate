@@ -1,6 +1,6 @@
 import { command, string, positional } from 'cmd-ts';
 import { isEmptyDir } from '../fs/is-empty-dir';
-import { entitiyExists } from '../fs/entity-exists';
+import { fileExists } from '../fs/file-exists';
 import { errorDirArg, forceArg, timeoutArg } from './common';
 import { migrateDirFlatGen } from '../dir/migrate-flat';
 import { ExifTool } from 'exiftool-vendored';
@@ -32,13 +32,13 @@ export const migrateFlat = command({
       }
     };
 
-    if (!(await entitiyExists(inputDir))) {
+    if (!(await fileExists(inputDir))) {
       errs.push(`The specified google directory does not exist: ${inputDir}`);
     }
-    if (!(await entitiyExists(outputDir))) {
+    if (!(await fileExists(outputDir))) {
       errs.push(`The specified output directory does not exist: ${inputDir}`);
     }
-    if (!(await entitiyExists(errorDir))) {
+    if (!(await fileExists(errorDir))) {
       errs.push(`The specified error directory does not exist: ${inputDir}`);
     }
     checkErrs();

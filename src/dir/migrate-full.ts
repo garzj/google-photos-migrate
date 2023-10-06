@@ -1,5 +1,5 @@
 import { restructureAndProcess } from './restructure-and-process';
-import { entitiyExists } from '../fs/entity-exists';
+import { fileExists } from '../fs/file-exists';
 import { photosDirs } from '../config/langs';
 import { asyncGenToAsync } from '../ts';
 import { MediaFile } from '../media/MediaFile';
@@ -23,7 +23,7 @@ export async function* migrateDirFullGen(
   // Can add more language support here in the future
   let googlePhotosDir: string = '';
   for (const photosDir of photosDirs) {
-    if (await entitiyExists(`${migCtx.inputDir}/${photosDir}`)) {
+    if (await fileExists(`${migCtx.inputDir}/${photosDir}`)) {
       googlePhotosDir = `${migCtx.inputDir}/${photosDir}`;
       break;
     }

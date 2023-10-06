@@ -1,6 +1,6 @@
 import { command, string, positional } from 'cmd-ts';
 import { isEmptyDir } from '../fs/is-empty-dir';
-import { entitiyExists } from '../fs/entity-exists';
+import { fileExists } from '../fs/file-exists';
 import { errorDirArg, forceArg, timeoutArg } from './common';
 import { migrateDirFullGen } from '..';
 import { ExifTool } from 'exiftool-vendored';
@@ -33,10 +33,10 @@ export const migrateFull = command({
       }
     };
 
-    if (!(await entitiyExists(inputDir))) {
+    if (!(await fileExists(inputDir))) {
       errs.push(`The specified takeout directory does not exist: ${inputDir}`);
     }
-    if (!(await entitiyExists(outputDir))) {
+    if (!(await fileExists(outputDir))) {
       errs.push(`The specified target directory does not exist: ${outputDir}`);
     }
     checkErrs();

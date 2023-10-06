@@ -1,7 +1,7 @@
 import { basename, dirname } from 'path';
 import { MigrationContext } from '../dir/migrate-flat';
 import { MediaFileExtension } from '../media/MediaFileExtension';
-import { entitiyExists } from '../fs/entity-exists';
+import { fileExists } from '../fs/file-exists';
 import { editedSuffices } from '../config/langs';
 
 export async function findMetaFile(
@@ -71,7 +71,7 @@ export async function findMetaFile(
   }
 
   for (const potPath of potPaths) {
-    if (!(await entitiyExists(potPath))) {
+    if (!(await fileExists(potPath))) {
       continue;
     }
     return potPath;
