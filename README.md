@@ -68,16 +68,13 @@ If all goes well you can ignore the error directories and just use the output in
 
 A Dockerfile is also provided to make running this tool easier on most hosts. The image must be built manually (see below), no pre-built images are provided. Using it will by default use only software-based format conversion, hardware accelerated format conversion is beyond these instructions.
 
-**You must build the image yourself (see above), no public pre-built images are provided.**
-
-You must build the image once before you run it:
+Build the image once before you run it:
 
 ```shell
-# get the source code
 git clone https://github.com/garzj/google-photos-migrate
 cd google-photos-migrate
 
-# Build the image. Must be run from within the source code folder.
+# build the image
 docker build -f Dockerfile -t localhost/google-photos-migrate:latest .
 ```
 
@@ -96,11 +93,12 @@ docker run --rm -it --security-opt=label=disable \
 To run `fullMigrate`, which requires only the Takeout folder:
 
 ```shell
-mkdir output error
+mkdir output
 docker run --rm -it -security-opt=label=disable \
     -v $(readlink -e path/to/takeout):/takeout \
+    -v $(readlink -e ./output):/output \
    localhost/google-photos-migrate:latest \
-     fullMigrate '/takeout' --timeout=60000
+     fullMigrate '/takeout' '/output' --timeout=60000
 ```
 
 All other commands and options are also available. The only difference from running it natively is the lack of (possible) hardware acceleration, and the need to explicitly add any folders the command will need to reference as host-mounts for the container.
@@ -108,7 +106,6 @@ All other commands and options are also available. The only difference from runn
 For the overall help:
 
 ```shell
-# no folders needed, so keep it simple
 docker run --rm -it --security-opt=label=disable \
    localhost/google-photos-migrate:latest \
      --help
@@ -123,13 +120,13 @@ docker run --rm -it --security-opt=label=disable \
 
 **Prerec**: Must have node 18 & yarn installed.
 
-For basic deployment do the following:
+To test the app:
 
 ```bash
 git clone https://github.com/garzj/google-photos-migrate
+cd google-photos-migrate
 yarn
-yarn build
-yarn start <subcommand>
+yarn dev <subcommand>
 ```
 
-The entrypoint into the codebase is `src/cli.ts`
+The entrypoint of the cli is in `src/cli.ts` and library code should be exported from `src/index.ts`.
