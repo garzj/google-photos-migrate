@@ -1,65 +1,46 @@
 import { glob } from 'glob';
-import { basename, dirname } from 'path';
-import { mkdir, cp } from 'fs/promises';
-import { ExifTool } from 'exiftool-vendored';
-import { migrateSingleFolder } from './migrate-single-folder';
+import { basename } from 'path';
+import { mkdir } from 'fs/promises';
 import { checkErrorDir } from './check-error-dir';
-import path = require('path');
+import { migrateDirFlatGen } from './migrate-flat';
+import { FullMigrationContext } from './migrate-full';
 
-async function _restructureAndProcess(
+async function* _restructureAndProcess(
   folders: string[],
-  targetDir: string,
   processingAlbums: boolean, // true for Albums, false for Photos
-  exifTool: ExifTool
+  migCtx: FullMigrationContext
 ) {
-  console.log(`Starting restructure of ${folders.length} directories`);
-  await mkdir(targetDir, { recursive: true });
-  for (const folder of folders) {
-    if (processingAlbums) {
-      // true for Albums, false for Photos
-      console.log(`Processing album ${folder}...`);
-      let outDir = `${targetDir}/AlbumsProcessed/${basename(folder)}`;
-      let errDir = `${targetDir}/AlbumsError/${basename(folder)}`;
-      if (basename(folder).includes('Untitled(')) {
-        outDir = `${targetDir}/AlbumsProcessed/Untitled`;
-        errDir = `${targetDir}/AlbumsError/Untitled`;
-      }
-      await mkdir(outDir, { recursive: true });
-      await mkdir(errDir, { recursive: true });
-      await migrateSingleFolder(folder, outDir, errDir, exifTool, false);
-    } else {
-      const outDir = `${targetDir}/PhotosProcessed`;
-      const errDir = `${targetDir}/PhotosError`;
-      await mkdir(outDir, { recursive: true });
-      await mkdir(errDir, { recursive: true });
-      await migrateSingleFolder(folder, outDir, errDir, exifTool, false);
-    }
-  }
+  migCtx.log(`Starting restructure of ${folders.length} directories.`);
 
-  // check for errors
-  if (!processingAlbums) {
-    const outDir = `${targetDir}/PhotosProcessed`;
-    const errDir = `${targetDir}/PhotosError`;
-    await checkErrorDir(outDir, errDir, exifTool);
-  } else {
-    const outDir = `${targetDir}/AlbumsProcessed`;
-    const errDir = `${targetDir}/AlbumsError`;
-    const errAlbumDirs = await glob(errDir);
-    for (const dir of errAlbumDirs) {
-      if (dir == errDir) {
-        continue;
-      }
-      await checkErrorDir(dir, path.join(outDir, basename(dir)), exifTool);
+  for (const folder of folders) {
+    processingAlbums && migCtx.log(`Processing album ${folder}...`);
+
+    let albumName = processingAlbums ? basename(folder) : 'Photos';
+    if (albumName.startsWith('Untitled(')) {
+      albumName = 'Untitled';
     }
+
+    const outDir = `${migCtx.outputDir}/${albumName}`;
+    const errDir = `${migCtx.errorDir}/${albumName}`;
+
+    await mkdir(outDir, { recursive: true });
+    await mkdir(errDir, { recursive: true });
+    yield* migrateDirFlatGen({
+      ...migCtx,
+      inputDir: folder,
+      outputDir: outDir,
+      errorDir: errDir,
+    });
+
+    await checkErrorDir(outDir, errDir, migCtx.exiftool);
   }
 
   console.log(`Sucsessfully restructured ${folders.length} directories`);
 }
 
-export async function restructureAndProcess(
+export async function* restructureAndProcess(
   sourceDir: string,
-  targetDir: string,
-  exifTool: ExifTool
+  migCtx: FullMigrationContext
 ) {
   // before
   // $rootdir/My Album 1/*
@@ -71,31 +52,18 @@ export async function restructureAndProcess(
   // $rootdir/AlbumsProcessed/My Album 2/*
   // $rootdir/PhotosProcessed/*
 
-  console.log('Processing photos...');
-
   // move the "Photos from $YEAR" directories to Photos/
-  await _restructureAndProcess(
-    await glob(`${sourceDir}/Photos from */`),
-    targetDir,
-    false,
-    exifTool
+  migCtx.log('Processing photos...');
+  const photoSet = new Set(
+    await glob([`${sourceDir}/Photos`, `${sourceDir}/Photos from */`])
   );
-
-  console.log('Processing albums...');
+  yield* _restructureAndProcess([...photoSet], false, migCtx);
 
   // move everythingg else to Albums/, so we end up with two top level folders
+  migCtx.log('Processing albums...');
   const fullSet: Set<string> = new Set(await glob(`${sourceDir}/*/`));
-  const photoSet: Set<string> = new Set(
-    await glob(`${sourceDir}/Photos from */`)
-  );
-  photoSet.add(`${sourceDir}/Photos`);
-  const everythingExceptPhotosDir: string[] = Array.from(
-    new Set([...fullSet].filter((x) => !photoSet.has(x)))
-  );
-  await _restructureAndProcess(
-    everythingExceptPhotosDir,
-    targetDir,
-    true,
-    exifTool
-  );
+  const everythingExceptPhotosDir = [
+    ...new Set([...fullSet].filter((x) => !photoSet.has(x))),
+  ];
+  yield* _restructureAndProcess(everythingExceptPhotosDir, true, migCtx);
 }

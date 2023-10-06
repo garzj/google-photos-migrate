@@ -1,4 +1,10 @@
-import { flag, number, option } from 'cmd-ts';
+import { flag, number, option, positional, string } from 'cmd-ts';
+
+export const errorDirArg = positional({
+  type: string,
+  displayName: 'error_dir',
+  description: 'Failed media will be saved here.',
+});
 
 export const timeoutArg = option({
   type: number,

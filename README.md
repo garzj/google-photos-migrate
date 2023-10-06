@@ -23,29 +23,20 @@ If you wish to migrate a single folder from a Google Photos takeout file (or fla
 ```bash
 mkdir output error
 
-npx google-photos-migrate@latest folderMigrate '/path/to/takeout/Google Fotos' './output' './error' --timeout 60000
+npx google-photos-migrate@latest flat '/path/to/takeout/Google Photos' './output' './error' --timeout 60000
 ```
 
-#### Structured migration
+#### Full structured migration
 
 If you wish to migrate an entire takeout folder (and keep the album directory structure):
 
 ```bash
 mkdir output error
 
-npx google-photos-migrate@latest fullMigrate '/path/to/takeout' '/path/to/target' --timeout 60000
+npx google-photos-migrate@latest full '/path/to/takeout' './output' './error' --timeout 60000
 ```
 
-In the target directory, four sub-directories are created:
-
-```
-PhotosProcessed
-PhotosError
-AlbumsProcessed
-AlbumsError
-```
-
-If all goes well you can ignore the error directories and just use the output in the \*Processed dirs.
+The folder names in the `output` and `error` directories will now correspond to the original album names.
 
 #### Optional flags (see `--help` for all details):
 
@@ -74,7 +65,7 @@ cd google-photos-migrate
 docker build -f Dockerfile -t localhost/google-photos-migrate:latest .
 ```
 
-To run `folderMigrate`, which requires providing multiple folders:
+To run the flat migration:
 
 ```shell
 mkdir output error
@@ -83,21 +74,22 @@ docker run --rm -it --security-opt=label=disable \
     -v $(readlink -e ./output):/output \
     -v $(readlink -e ./error):/error \
    localhost/google-photos-migrate:latest \
-     folderMigrate '/takeout/Google Fotos' '/output' '/error' --timeout=60000
+     flat '/takeout/Google Fotos' '/output' '/error' --timeout=60000
 ```
 
-To run `fullMigrate`, which requires only the Takeout folder:
+To run the full migration:
 
 ```shell
-mkdir output
+mkdir output error
 docker run --rm -it -security-opt=label=disable \
     -v $(readlink -e path/to/takeout):/takeout \
     -v $(readlink -e ./output):/output \
+    -v $(readlink -e ./error):/error \
    localhost/google-photos-migrate:latest \
-     fullMigrate '/takeout' '/output' --timeout=60000
+     fullMigrate '/takeout' '/output' '/error' --timeout=60000
 ```
 
-All other commands and options are also available. The only difference from running it natively is the lack of (possible) hardware acceleration, and the need to explicitly add any folders the command will need to reference as host-mounts for the container.
+All other options are also available. The only difference from running it natively is the lack of (possible) hardware acceleration, and the need to explicitly add any folders the command will need to reference as host-mounts for the container.
 
 For the overall help:
 
