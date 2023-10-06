@@ -33,4 +33,6 @@ export async function* migrateDirFullGen(
   }
 
   yield* restructureAndProcess(googlePhotosDir, migCtx);
+
+  migCtx.endExifTool && migCtx.exiftool.end();
 }
