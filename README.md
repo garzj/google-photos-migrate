@@ -16,7 +16,7 @@ A tool like [google-photos-exif](https://github.com/mattwilson1024/google-photos
 
 **Prerec**: Must have at least node 18 & yarn installed.
 
-If you wish to migrate a single folder from a Google Photos takeout file:
+If you wish to migrate a single folder from a Google Photos takeout file (or flatten the entire Takout folder into a single output with no album hierarchy):
 
 ```bash
 mkdir output error
@@ -34,7 +34,7 @@ Optional flags for folder takeout (see `--help` for all details):
     Meaning: Forces the migration and overwrites files in the target directory.
 ```
 
-If you wish to migrate an entire takeout folder:
+If you wish to migrate an entire takeout folder (and keep the album directory structure):
 
 ```bash
 mkdir output error
@@ -50,18 +50,16 @@ Optional flags for full takeout (see `--help` for all details):
     Meaning: Sets the timeout for exiftool, default is 30000 (30s)
 ```
 
-The processed folders will be automatically put in `/path/to/takeout/Google Photos[Fotos]/PhotosProcessed` & `/path/to/takeout/Google Photos[Fotos]/AlbumsProcessed`.
+In the target directory, four sub-directories are created:
 
-**WARNING:** The `fullMigrate` command non-destructively modifies your files, which results in 3 nearly complete copies of your Takeout folder by the time it completes successfully: the original, the intermediate metadata-modified files, and the final organized and de-duplicated files.  Make sure you have sufficient disk space for this.
-
-Additional intermediate folders are created as part of this command and in the event of errors will need to be manually removed before retrying. All are under the `/path/to/takeout/Google Photos[Fotos]/` folder:
 ```
-Albums
-AlbumsProcessed
-Photos
-PhotosError
 PhotosProcessed
+PhotosError
+AlbumsProcessed
+AlbumsError
 ```
+
+If all goes well you can ignore the error directories and just use the output in the *Processed dirs.
 
 ### Docker
 
