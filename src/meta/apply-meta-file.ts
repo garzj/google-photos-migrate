@@ -10,7 +10,7 @@ import {
   MissingMetaError,
   WrongExtensionError,
 } from './apply-meta-errors';
-import { MigrationContext } from '../media/migrate-google-dir';
+import { MigrationContext } from '../dir/migrate-flat';
 
 export async function applyMetaFile(
   mediaFile: MediaFile,

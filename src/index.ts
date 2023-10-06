@@ -1,8 +1,16 @@
 import './config/env';
 
-import { migrateGoogleDir } from './media/migrate-google-dir';
+import { migrateDirFlat, migrateDirFlatGen } from './dir/migrate-flat';
+import { migrateDirFull, migrateDirFullGen } from './dir/migrate-full';
 import type { MediaFileExtension } from './media/MediaFileExtension';
 import { supportedExtensions } from './config/extensions';
+import type { MigrationArgs } from './dir/migration-args';
 
-export { migrateGoogleDir, supportedExtensions };
-export type { MediaFileExtension };
+export {
+  migrateDirFlat,
+  migrateDirFlatGen,
+  migrateDirFull,
+  migrateDirFullGen,
+  supportedExtensions,
+};
+export type { MigrationArgs, MediaFileExtension };
