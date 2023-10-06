@@ -1,2 +1,3 @@
 export const editedSuffices = ['edited', 'bearbeitet', 'modifié'];
-export const possiblePhotosLocations = ['Google Photos', 'Google Fotos'];
+export const photosLocations = ['Google Photos', 'Google Fotos'];
+export const untitledNames = ['Untitled', 'Unbenannt'];

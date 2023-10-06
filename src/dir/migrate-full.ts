@@ -1,6 +1,6 @@
 import { restructureAndProcess } from './restructure-and-process';
 import { entitiyExists } from '../fs/entity-exists';
-import { possiblePhotosLocations } from '../config/langs';
+import { photosLocations } from '../config/langs';
 import { asyncGenToAsync } from '../ts';
 import { MediaFile } from '../media/MediaFile';
 import { MigrationArgs, migrationArgsDefaults } from './migration-args';
@@ -21,7 +21,7 @@ export async function* migrateDirFullGen(
   // rootdir refers to that subfolder
   // Can add more language support here in the future
   let googlePhotosDir: string = '';
-  for (const i of possiblePhotosLocations) {
+  for (const i of photosLocations) {
     if (await entitiyExists(`${migCtx.inputDir}/${i}`)) {
       googlePhotosDir = `${migCtx.inputDir}/${i}`;
       break;
