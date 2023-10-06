@@ -1,7 +1,6 @@
 import { glob } from 'glob';
 import { basename } from 'path';
 import { mkdir } from 'fs/promises';
-import { checkErrorDir } from './check-error-dir';
 import { migrateDirFlatGen } from './migrate-flat';
 import { FullMigrationContext } from './migrate-full';
 import { untitledDirs } from '../config/langs';
@@ -34,8 +33,6 @@ async function* _restructureAndProcess(
       outputDir: outDir,
       errorDir: errDir,
     });
-
-    await checkErrorDir(outDir, errDir, migCtx.exiftool);
   }
 
   console.log(`Sucsessfully restructured ${folders.length} directories`);
