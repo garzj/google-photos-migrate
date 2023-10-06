@@ -4,7 +4,7 @@ import { mkdir } from 'fs/promises';
 import { checkErrorDir } from './check-error-dir';
 import { migrateDirFlatGen } from './migrate-flat';
 import { FullMigrationContext } from './migrate-full';
-import { untitledNames } from '../config/langs';
+import { untitledDirs } from '../config/langs';
 
 async function* _restructureAndProcess(
   folders: string[],
@@ -17,7 +17,7 @@ async function* _restructureAndProcess(
     processingAlbums && migCtx.log(`Processing album ${folder}...`);
 
     let albumName = processingAlbums ? basename(folder) : 'Photos';
-    for (const untitledName of untitledNames) {
+    for (const untitledName of untitledDirs) {
       if (albumName.startsWith(`${untitledName}(`)) {
         albumName = untitledName;
       }
