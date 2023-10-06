@@ -14,7 +14,7 @@
     "format": "prettier -w --ignore-path .gitignore .",
     "lint": "eslint './**/*.{ts,tsx}' --ignore-path .gitignore"
   },
-  "author": "Johannes Garz <jojogarz123@gmail.com> (https://garz.dev/)",
+  "author": "Johannes Garz <johannes@garz.dev> (https://garz.dev/)",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.3.0",
