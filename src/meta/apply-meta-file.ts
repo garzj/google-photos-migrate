@@ -19,6 +19,7 @@ export async function applyMetaFile(
   const metaJson = (await readFile(mediaFile.jsonPath)).toString();
   const meta: GoogleMetadata | undefined = JSON.parse(metaJson);
 
+  // time
   const timeTakenTimestamp = meta?.photoTakenTime?.timestamp;
   if (timeTakenTimestamp === undefined)
     return new MissingMetaError(mediaFile, 'photoTakenTime');
@@ -50,6 +51,27 @@ export async function applyMetaFile(
   }
 
   tags.FileModifyDate = timeTakenUTC;
+
+  // description
+  const description = meta?.description;
+  tags.Description = description;
+  tags['Caption-Abstract'] = description;
+  tags.ImageDescription = description;
+
+  // gps
+  const [alt, lat, lon] = [
+    meta?.geoData?.altitude,
+    meta?.geoData?.latitude,
+    meta?.geoData?.longitude,
+  ];
+  if (![alt, lat, lon].some((axis) => axis === undefined)) {
+    tags.GPSAltitude = alt;
+    tags.GPSAltitudeRef = `${alt}`;
+    tags.GPSLatitude = lat;
+    tags.GPSLatitudeRef = `${lat}`;
+    tags.GPSLongitude = lon;
+    tags.GPSLongitudeRef = `${lon}`;
+  }
 
   try {
     await migCtx.exiftool.write(mediaFile.path, tags, [
