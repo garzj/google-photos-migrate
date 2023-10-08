@@ -6,7 +6,7 @@ import { MediaFileExtension } from '../media/MediaFileExtension';
 
 const livePhotoAliases = ['.heic', '.jpg', '.jpeg'];
 
-let extensions: MediaFileExtension[] = [
+const extensions: MediaFileExtension[] = [
   { suffix: '.jpg', metaType: MetaType.EXIF },
   { suffix: '.jpeg', metaType: MetaType.EXIF },
   { suffix: '.png', metaType: MetaType.EXIF },
