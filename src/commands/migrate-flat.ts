@@ -36,10 +36,10 @@ export const migrateFlat = command({
       errs.push(`The specified google directory does not exist: ${inputDir}`);
     }
     if (!(await fileExists(outputDir))) {
-      errs.push(`The specified output directory does not exist: ${inputDir}`);
+      errs.push(`The specified output directory does not exist: ${outputDir}`);
     }
     if (!(await fileExists(errorDir))) {
-      errs.push(`The specified error directory does not exist: ${inputDir}`);
+      errs.push(`The specified error directory does not exist: ${errorDir}`);
     }
     checkErrs();
 
