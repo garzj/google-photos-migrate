@@ -82,14 +82,14 @@ export async function applyMetaFile(
   } catch (e) {
     if (e instanceof Error) {
       const wrongExtMatch = e.message.match(
-        /Not a valid (?<expected>\w+) \(looks more like a (?<actual>\w+)\)/
+        /Not a valid (?<current>\w+) \(looks more like a (?<actual>\w+)\)/
       );
-      const expected = wrongExtMatch?.groups?.['expected'];
+      const current = wrongExtMatch?.groups?.['current'];
       const actual = wrongExtMatch?.groups?.['actual'];
-      if (expected !== undefined && actual !== undefined) {
+      if (current !== undefined && actual !== undefined) {
         return new WrongExtensionError(
           mediaFile,
-          `.${expected.toLowerCase()}`,
+          `.${current.toLowerCase()}`,
           `.${actual.toLowerCase()}`
         );
       }

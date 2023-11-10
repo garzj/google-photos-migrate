@@ -63,7 +63,7 @@ export async function migrateMediaFile(
   if (err instanceof WrongExtensionError) {
     const oldBase = basename(mediaFile.path);
     const newBase =
-      oldBase.slice(0, oldBase.length - err.expectedExt.length) + err.actualExt;
+      oldBase.slice(0, oldBase.length - err.currentExt.length) + err.actualExt;
     mediaFile.path = await saveToDir(
       mediaFile.path,
       migCtx.outputDir,
@@ -72,7 +72,7 @@ export async function migrateMediaFile(
       newBase
     );
     migCtx.warnLog(
-      `Renamed wrong extension ${err.expectedExt} to ${err.actualExt}: ${mediaFile.path}`
+      `Renamed wrong extension ${err.currentExt} to ${err.actualExt}: ${mediaFile.path}`
     );
     err = await applyMetaFile(mediaFile, migCtx);
     if (!err) {

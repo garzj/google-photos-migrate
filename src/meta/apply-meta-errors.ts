@@ -31,14 +31,14 @@ export class ExifToolError extends ApplyMetaError {
 export class WrongExtensionError extends ApplyMetaError {
   constructor(
     failedMedia: MediaFileInfo,
-    public expectedExt: string,
+    public currentExt: string,
     public actualExt: string
   ) {
     super(failedMedia);
   }
 
   toString() {
-    return `File has wrong file extension ${this.actualExt}, should be ${this.expectedExt}: ${this.failedMedia.path}`;
+    return `File has wrong file extension ${this.actualExt}, should be ${this.currentExt}: ${this.failedMedia.path}`;
   }
 }
 
