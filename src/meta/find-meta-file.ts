@@ -62,7 +62,9 @@ export async function findMetaFile(
   // <name>.<ext>.json
   potExts.push(ext.suffix);
   // <name>.<extAlias>.json
-  potExts.push(...(ext.aliases ?? []));
+  potExts.push(
+    ...(ext.aliases ?? []).map((a) => (typeof a === 'string' ? a : a.suffix))
+  );
   // <name>.json
   potExts.push('');
 

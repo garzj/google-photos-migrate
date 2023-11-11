@@ -1,6 +1,9 @@
-import { basename } from 'path';
+import { basename, dirname, extname } from 'path';
 import { findMetaFile } from '../meta/find-meta-file';
-import { MediaFileExtension } from './MediaFileExtension';
+import {
+  MediaFileAliasDetails,
+  MediaFileExtension,
+} from './MediaFileExtension';
 import { MediaFile, MediaFileInfo } from './MediaFile';
 import { applyMetaFile } from '../meta/apply-meta-file';
 import { supportedExtensions } from '../config/extensions';
@@ -11,6 +14,28 @@ import { WrongExtensionError } from '../meta/apply-meta-errors';
 import { readMetaTitle } from '../meta/read-meta-title';
 import { saveToDir } from './save-to-dir';
 import { MigrationContext } from '../dir/migrate-flat';
+
+function applyExt(path: string, from: string, to: string) {
+  return path.slice(0, path.length - from.length) + to;
+}
+
+async function renameExt(
+  migCtx: MigrationContext,
+  file: string,
+  from: string,
+  to: string
+) {
+  const destDir = dirname(file);
+  const saveBase = applyExt(basename(file), from, to);
+  return await saveToDir(file, destDir, migCtx, true, saveBase);
+}
+
+function getOutExtRename(ext: MediaFileExtension, metaTitle: string) {
+  const renames = (ext.aliases ?? []).filter(
+    (x): x is MediaFileAliasDetails => typeof x === 'object'
+  );
+  return renames.find((r) => metaTitle.endsWith(r.suffix));
+}
 
 export async function migrateMediaFile(
   originalPath: string,
@@ -43,12 +68,21 @@ export async function migrateMediaFile(
   }
   mediaFileInfo.jsonPath = jsonPath;
 
+  const metaBase =
+    (await readMetaTitle(mediaFileInfo)) ?? basename(mediaFileInfo.path);
+  const outExtRename = getOutExtRename(
+    ext,
+    metaBase ?? basename(mediaFileInfo.path)
+  );
+  const outBase = outExtRename
+    ? applyExt(metaBase, outExtRename.suffix, outExtRename.out)
+    : metaBase;
   mediaFileInfo.path = await saveToDir(
     originalPath,
     migCtx.outputDir,
     migCtx,
     false,
-    await readMetaTitle(mediaFileInfo)
+    outBase
   );
   const mediaFile: MediaFile = {
     ...mediaFileInfo,
@@ -56,35 +90,32 @@ export async function migrateMediaFile(
     jsonPath,
   };
   let err = await applyMetaFile(mediaFile, migCtx);
-  if (!err) {
-    return mediaFile;
-  }
+  if (err) {
+    if (err instanceof WrongExtensionError) {
+      if (outExtRename) {
+        migCtx.warnLog(
+          `Extension ${err.currentExt} should be ${err.actualExt}, but was forcibly set: ${mediaFile.path}`
+        );
+        return mediaFile;
+      }
 
-  if (err instanceof WrongExtensionError) {
-    const oldBase = basename(mediaFile.path);
-    const newBase =
-      oldBase.slice(0, oldBase.length - err.currentExt.length) + err.actualExt;
-    mediaFile.path = await saveToDir(
-      mediaFile.path,
-      migCtx.outputDir,
-      migCtx,
-      true,
-      newBase
-    );
-    migCtx.warnLog(
-      `Renamed wrong extension ${err.currentExt} to ${err.actualExt}: ${mediaFile.path}`
-    );
-    err = await applyMetaFile(mediaFile, migCtx);
-    if (!err) {
-      return mediaFile;
+      await renameExt(migCtx, mediaFile.path, err.currentExt, err.actualExt);
+      migCtx.warnLog(
+        `Renamed wrong extension ${err.currentExt} to ${err.actualExt}: ${mediaFile.path}`
+      );
+      err = await applyMetaFile(mediaFile, migCtx);
+      if (!err) {
+        return mediaFile;
+      }
     }
+
+    const savedPaths = await Promise.all([
+      saveToDir(mediaFile.path, migCtx.errorDir, migCtx, true),
+      saveToDir(mediaFile.jsonPath, migCtx.errorDir, migCtx),
+    ]);
+    mediaFile.path = savedPaths[0];
+    return err;
   }
 
-  const savedPaths = await Promise.all([
-    saveToDir(mediaFile.path, migCtx.errorDir, migCtx, true),
-    saveToDir(mediaFile.jsonPath, migCtx.errorDir, migCtx),
-  ]);
-  mediaFile.path = savedPaths[0];
-
-  return err;
+  return mediaFile;
 }
