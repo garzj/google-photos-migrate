@@ -5,10 +5,11 @@ export const supportedExtensions: MediaFileExtension[] = [
   { suffix: '.jpg', metaType: MetaType.EXIF },
   { suffix: '.jpeg', metaType: MetaType.EXIF },
   { suffix: '.png', metaType: MetaType.EXIF },
-  { suffix: '.raw', metaType: MetaType.NONE },
+  { suffix: '.raw', metaType: MetaType.EXIF }, // could be TIFF
+  { suffix: '.dng', metaType: MetaType.EXIF }, // based on TIFF
   { suffix: '.ico', metaType: MetaType.NONE },
   { suffix: '.tiff', metaType: MetaType.EXIF },
-  { suffix: '.webp', metaType: MetaType.EXIF }, // actually RIFF, can only write EXIF
+  { suffix: '.webp', metaType: MetaType.EXIF }, // based on RIFF
   { suffix: '.heic', metaType: MetaType.QUICKTIME },
   { suffix: '.heif', metaType: MetaType.QUICKTIME },
   { suffix: '.gif', metaType: MetaType.NONE },
