@@ -10,8 +10,6 @@ async function* _restructureAndProcess(
   processingAlbums: boolean, // true for Albums, false for Photos
   migCtx: FullMigrationContext
 ) {
-  migCtx.log(`Starting restructure of ${folders.length} directories.`);
-
   for (const folder of folders) {
     processingAlbums && migCtx.log(`Processing album ${folder}...`);
 
@@ -34,8 +32,6 @@ async function* _restructureAndProcess(
       errorDir: errDir,
     });
   }
-
-  console.log(`Sucsessfully restructured ${folders.length} directories`);
 }
 
 export async function* restructureAndProcess(
