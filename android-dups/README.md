@@ -35,10 +35,10 @@ pip3 install opencv-python scikit-image
 python3 ./find-cloud-phone-dups.py
 
 # Apply newer dates
-bash ./fix-dates.sh
+./fix-dates.sh
 
 # Compare by size and generate lists for deletion
-bash ./gen-file-list.sh
+./gen-deletion-lists.sh
 
 # Check the generated files, make sure no data gets lost
 
