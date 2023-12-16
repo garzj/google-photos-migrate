@@ -1,8 +1,8 @@
 import { basename, dirname } from 'path';
 import { MigrationContext } from '../dir/migrate-flat';
 import { MediaFileExtension } from '../media/MediaFileExtension';
-import { fileExists } from '../fs/file-exists';
 import { editedSuffices } from '../config/langs';
+import { pathExists } from 'fs-extra';
 
 export async function findMetaFile(
   mediaPath: string,
@@ -73,7 +73,7 @@ export async function findMetaFile(
   }
 
   for (const potPath of potPaths) {
-    if (!(await fileExists(potPath))) {
+    if (!(await pathExists(potPath))) {
       continue;
     }
     return potPath;

@@ -1,10 +1,10 @@
 import { command, string, positional } from 'cmd-ts';
 import { isEmptyDir } from '../fs/is-empty-dir';
-import { fileExists } from '../fs/file-exists';
 import { errorDirArg, forceArg, timeoutArg } from './common';
 import { migrateDirFlatGen } from '../dir/migrate-flat';
 import { ExifTool } from 'exiftool-vendored';
 import { MediaMigrationError } from '../media/MediaMigrationError';
+import { pathExists } from 'fs-extra';
 
 export const migrateFlat = command({
   name: 'google-photos-migrate-flat',
@@ -32,13 +32,13 @@ export const migrateFlat = command({
       }
     };
 
-    if (!(await fileExists(inputDir))) {
+    if (!(await pathExists(inputDir))) {
       errs.push(`The specified google directory does not exist: ${inputDir}`);
     }
-    if (!(await fileExists(outputDir))) {
+    if (!(await pathExists(outputDir))) {
       errs.push(`The specified output directory does not exist: ${outputDir}`);
     }
-    if (!(await fileExists(errorDir))) {
+    if (!(await pathExists(errorDir))) {
       errs.push(`The specified error directory does not exist: ${errorDir}`);
     }
     checkErrs();

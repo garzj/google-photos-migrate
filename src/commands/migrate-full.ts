@@ -1,11 +1,11 @@
 import { command, string, positional } from 'cmd-ts';
 import { isEmptyDir } from '../fs/is-empty-dir';
-import { fileExists } from '../fs/file-exists';
 import { errorDirArg, forceArg, timeoutArg } from './common';
 import { migrateDirFullGen } from '..';
 import { ExifTool } from 'exiftool-vendored';
 import { MediaMigrationError } from '../media/MediaMigrationError';
 import { DirMigrationError } from '../dir/DirMigrationError';
+import { pathExists } from 'fs-extra';
 
 export const migrateFull = command({
   name: 'google-photos-migrate-full',
@@ -33,10 +33,10 @@ export const migrateFull = command({
       }
     };
 
-    if (!(await fileExists(inputDir))) {
+    if (!(await pathExists(inputDir))) {
       errs.push(`The specified takeout directory does not exist: ${inputDir}`);
     }
-    if (!(await fileExists(outputDir))) {
+    if (!(await pathExists(outputDir))) {
       errs.push(`The specified target directory does not exist: ${outputDir}`);
     }
     checkErrs();

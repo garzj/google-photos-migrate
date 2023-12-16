@@ -17,6 +17,7 @@
   "author": "Johannes Garz <johannes@garz.dev> (https://garz.dev/)",
   "license": "MIT",
   "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
     "@types/node": "^20.3.0",
     "@typescript-eslint/eslint-plugin": "^6.7.4",
     "@typescript-eslint/parser": "^6.7.4",
@@ -32,6 +33,7 @@
   "dependencies": {
     "cmd-ts": "^0.12.1",
     "exiftool-vendored": "^22.0.0",
+    "fs-extra": "^11.2.0",
     "glob": "^10.3.3",
     "sanitize-filename": "^1.6.3"
   },

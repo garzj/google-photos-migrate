@@ -1,14 +1,14 @@
 import { basename, resolve } from 'path';
-import { fileExists } from '../fs/file-exists';
 import sanitize = require('sanitize-filename');
-import { copyFile, mkdir, rename } from 'fs/promises';
+import { copyFile, mkdir } from 'fs/promises';
 import { MigrationContext } from '../dir/migrate-flat';
+import { pathExists, move } from 'fs-extra';
 
 async function _saveToDir(
   file: string,
   destDir: string,
   saveBase: string,
-  move = false,
+  doMove = false,
   duplicateIndex = 0
 ) {
   const saveDir = resolve(
@@ -18,13 +18,13 @@ async function _saveToDir(
   await mkdir(saveDir, { recursive: true });
   const savePath = resolve(saveDir, saveBase);
 
-  const exists = await fileExists(savePath);
+  const exists = await pathExists(savePath);
   if (exists) {
-    return _saveToDir(file, destDir, saveBase, move, duplicateIndex + 1);
+    return _saveToDir(file, destDir, saveBase, doMove, duplicateIndex + 1);
   }
 
-  if (move) {
-    await rename(file, savePath);
+  if (doMove) {
+    await move(file, savePath);
   } else {
     await copyFile(file, savePath);
   }
