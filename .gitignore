@@ -1,12 +1,14 @@
 # Test
-Google\ Fotos/
-Google\ Photos/
-output/
-error/
+/test/
+/Takeout/
+/Google Fotos/
+/Google Photos/
+/output/
+/error/
 
 # Build
-lib/
-build/
+/lib/
+/build/
 
 # Env files
 .env
