@@ -12,6 +12,8 @@ A tool like [google-photos-exif](https://github.com/mattwilson1024/google-photos
 
 ## Run this tool
 
+**Note:** On Windows, make sure to use double quotes `"` instead of `'`.
+
 ### Natively
 
 **Prerec**: Must have at least node 18 & yarn installed.
