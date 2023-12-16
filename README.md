@@ -69,12 +69,12 @@ To run the full migration:
 
 ```shell
 mkdir output error
-docker run --rm -it -security-opt=label=disable \
-    -v $(readlink -e path/to/takeout):/takeout \
-    -v $(readlink -e ./output):/output \
-    -v $(readlink -e ./error):/error \
+docker run --rm -it --security-opt=label=disable \
+    -v "$(readlink -e path/to/takeout):/takeout" \
+    -v "$(readlink -e ./output):/output" \
+    -v "$(readlink -e ./error):/error" \
    localhost/google-photos-migrate:latest \
-     fullMigrate '/takeout' '/output' '/error' --timeout=60000
+     full '/takeout' '/output' '/error' --timeout=60000
 ```
 
 To run the flat migration:
@@ -82,9 +82,9 @@ To run the flat migration:
 ```shell
 mkdir output error
 docker run --rm -it --security-opt=label=disable \
-    -v $(readlink -e path/to/takeout):/takeout \
-    -v $(readlink -e ./output):/output \
-    -v $(readlink -e ./error):/error \
+    -v "$(readlink -e path/to/takeout):/takeout" \
+    -v "$(readlink -e ./output):/output" \
+    -v "$(readlink -e ./error):/error" \
    localhost/google-photos-migrate:latest \
      flat '/takeout/Google Fotos' '/output' '/error' --timeout=60000
 ```
