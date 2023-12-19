@@ -21,13 +21,14 @@ function applyExt(path: string, from: string, to: string) {
 
 async function renameExt(
   migCtx: MigrationContext,
-  file: string,
+  file: MediaFile,
   from: string,
   to: string
 ) {
-  const destDir = dirname(file);
-  const saveBase = applyExt(basename(file), from, to);
-  return await saveToDir(file, destDir, migCtx, true, saveBase);
+  const destDir = dirname(file.path);
+  const saveBase = applyExt(basename(file.path), from, to);
+  file.path = await saveToDir(file.path, destDir, migCtx, true, saveBase);
+  return file.path;
 }
 
 function getOutExtRename(ext: MediaFileExtension, metaTitle: string) {
@@ -99,7 +100,7 @@ export async function migrateMediaFile(
         return mediaFile;
       }
 
-      await renameExt(migCtx, mediaFile.path, err.currentExt, err.actualExt);
+      await renameExt(migCtx, mediaFile, err.currentExt, err.actualExt);
       migCtx.warnLog(
         `Renamed wrong extension ${err.currentExt} to ${err.actualExt}: ${mediaFile.path}`
       );
