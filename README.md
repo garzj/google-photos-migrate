@@ -5,7 +5,7 @@ A tool like [google-photos-exif](https://github.com/mattwilson1024/google-photos
 - uses the titles from the .json file to recover previous filenames
 - moves duplicates into their own folder
 - tries to match files by the title in their .json file
-- fixes wrong extensions, identified by [ExifTool](https://exiftool.org/)
+- fixes wrong extensions, identified by [ExifTool](https://exiftool.org/) (or use `--skip-corrections`)
 - video files won't show up as from 1970
 - works for English, German and French (for more langs fix [this file](./src/config/langs.ts))
 - supported extensions can be found and configured in [extensions.ts](./src/config/extensions.ts)

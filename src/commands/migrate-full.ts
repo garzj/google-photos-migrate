@@ -1,6 +1,11 @@
 import { command, string, positional } from 'cmd-ts';
 import { isEmptyDir } from '../fs/is-empty-dir';
-import { errorDirArg, forceArg, timeoutArg } from './common';
+import {
+  skipCorrectionsArg,
+  errorDirArg,
+  forceArg,
+  timeoutArg,
+} from './common';
 import { migrateDirFullGen } from '..';
 import { ExifTool } from 'exiftool-vendored';
 import { MediaMigrationError } from '../media/MediaMigrationError';
@@ -23,8 +28,16 @@ export const migrateFull = command({
     errorDir: errorDirArg,
     force: forceArg,
     timeout: timeoutArg,
+    skipCorrections: skipCorrectionsArg,
   },
-  handler: async ({ inputDir, outputDir, errorDir, force, timeout }) => {
+  handler: async ({
+    inputDir,
+    outputDir,
+    errorDir,
+    force,
+    timeout,
+    skipCorrections,
+  }) => {
     const errs: string[] = [];
     const checkErrs = () => {
       if (errs.length !== 0) {
@@ -60,6 +73,7 @@ export const migrateFull = command({
       warnLog: console.error,
       exiftool: new ExifTool({ taskTimeoutMillis: timeout }),
       endExifTool: true,
+      skipCorrections,
     });
     const counts = { err: 0, suc: 0 };
     for await (const result of migGen) {

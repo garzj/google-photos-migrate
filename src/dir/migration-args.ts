@@ -8,6 +8,7 @@ export type MigrationArgs = {
   warnLog?: (msg: string) => void;
   exiftool?: ExifTool;
   endExifTool?: boolean;
+  skipCorrections?: boolean;
   migrationLocks?: Map<string, Promise<string>>;
 };
 
@@ -21,5 +22,6 @@ export async function migrationArgsDefaults(
     endExifTool: args.endExifTool ?? !args.exiftool,
     log: args.log ?? (() => {}),
     warnLog: args.warnLog ?? (() => {}),
+    skipCorrections: args.skipCorrections ?? false,
   };
 }

@@ -1,6 +1,11 @@
 import { command, string, positional } from 'cmd-ts';
 import { isEmptyDir } from '../fs/is-empty-dir';
-import { errorDirArg, forceArg, timeoutArg } from './common';
+import {
+  skipCorrectionsArg,
+  errorDirArg,
+  forceArg,
+  timeoutArg,
+} from './common';
 import { migrateDirFlatGen } from '../dir/migrate-flat';
 import { ExifTool } from 'exiftool-vendored';
 import { MediaMigrationError } from '../media/MediaMigrationError';
@@ -22,6 +27,7 @@ export const migrateFlat = command({
     errorDir: errorDirArg,
     force: forceArg,
     timeout: timeoutArg,
+    skipCorrections: skipCorrectionsArg,
   },
   handler: async ({ inputDir, outputDir, errorDir, force, timeout }) => {
     const errs: string[] = [];

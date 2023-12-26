@@ -1,4 +1,4 @@
-import { basename, dirname, extname } from 'path';
+import { basename, dirname } from 'path';
 import { findMetaFile } from '../meta/find-meta-file';
 import {
   MediaFileAliasDetails,
@@ -10,7 +10,7 @@ import { supportedExtensions } from '../config/extensions';
 import { MediaMigrationError } from './MediaMigrationError';
 import { InvalidExtError } from './InvalidExtError';
 import { NoMetaFileError } from '../meta/NoMetaFileError';
-import { WrongExtensionError } from '../meta/apply-meta-errors';
+import { ApplyMetaError, WrongExtensionError } from '../meta/apply-meta-errors';
 import { readMetaTitle } from '../meta/read-meta-title';
 import { saveToDir } from './save-to-dir';
 import { MigrationContext } from '../dir/migrate-flat';
@@ -90,9 +90,23 @@ export async function migrateMediaFile(
     ext,
     jsonPath,
   };
-  let err = await applyMetaFile(mediaFile, migCtx);
+  const err = await applyMetaFile(mediaFile, migCtx);
+
+  return await handleApplyMetaErr(mediaFile, migCtx, err, outExtRename);
+}
+
+async function handleApplyMetaErr(
+  mediaFile: MediaFile,
+  migCtx: MigrationContext,
+  err: ApplyMetaError | null,
+  outExtRename?: MediaFileAliasDetails
+): Promise<MediaFile | ApplyMetaError> {
   if (err) {
     if (err instanceof WrongExtensionError) {
+      if (migCtx.skipCorrections) {
+        return mediaFile;
+      }
+
       if (outExtRename) {
         migCtx.warnLog(
           `Extension ${err.currentExt} should be ${err.actualExt}, but was forcibly set: ${mediaFile.path}`

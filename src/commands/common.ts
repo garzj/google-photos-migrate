@@ -20,3 +20,8 @@ export const forceArg = flag({
   long: 'force',
   description: "Forces the operation if the given directories aren't empty.",
 });
+
+export const skipCorrectionsArg = flag({
+  long: 'skip-corrections',
+  description: 'Skips renaming wrong extensions identified by ExifTool.',
+});
