@@ -1,4 +1,10 @@
-export const editedSuffices = ['edited', 'bearbeitet', 'modifié', 'düzenlendi', 'измененный'];
+export const editedSuffices = [
+  'edited',
+  'bearbeitet',
+  'modifié',
+  'düzenlendi',
+  'измененный',
+];
 export const photosDirs = [
   'Google Photos',
   'Google Fotos',
