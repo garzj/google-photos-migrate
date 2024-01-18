@@ -50,7 +50,7 @@ export async function applyMetaFile(
       exhaustiveCheck(mediaFile.ext.metaType);
   }
 
-  tags.FileModifyDate = timeTakenUTC;
+  tags.ModifyDate = timeTakenUTC;
 
   // description
   const description = meta?.description;
