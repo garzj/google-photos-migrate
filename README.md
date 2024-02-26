@@ -116,7 +116,10 @@ To test the app:
 git clone https://github.com/garzj/google-photos-migrate
 cd google-photos-migrate
 yarn
-yarn dev <subcommand>
+yarn build
+yarn start <subcommand>
 ```
 
 The entrypoint of the cli is in `src/cli.ts` and library code should be exported from `src/index.ts`.
+
+When using `yarn dev`, make sure to pass the `-f` flag to overwrite files after restarts.
