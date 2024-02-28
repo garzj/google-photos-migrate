@@ -5,18 +5,22 @@
   
   <div id="user-content-toc">
     <ul>
-      <li href="#project-info">Project info</li>
-      <li href="#run-this-tool">Run this tool
-      <ul>
-        <li href="#natively">Natively</li>
-        <li href="#docker">Docker</li>
-        </ul>
-      </li>
-      <li href="#further-steps">Further steps</li>
-      <li href="#development">Development
-      <ul>
-        <li href="#build-instructions">Build instructions</li>
-        <li href="#watch-file-changes">Watch file changes</li>
+      <li><a href="#google-photos-migrate">google-photos-migrate</a>
+        <ul>
+          <li><a href="#project-info">Project info</a></li>
+          <li><a href="#run-this-tool">Run this tool</a>
+            <ul>
+              <li><a href="#natively">Natively</a></li>
+              <li><a href="#docker">Docker</a></li>
+            </ul>
+          </li>
+          <li><a href="#further-steps">Further steps</a></li>
+          <li><a href="#development">Development</a>
+            <ul>
+              <li><a href="#build-instructions">Build instructions</a></li>
+              <li><a href="#watch-file-changes">Watch file changes</a></li>
+            </ul>
+          </li>
         </ul>
       </li>
     </ul>
