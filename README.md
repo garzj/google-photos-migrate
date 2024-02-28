@@ -3,28 +3,15 @@
 <details>
   <summary>Table of contents</summary>
   
-  <div id="user-content-toc">
-    <ul>
-      <li><a href="#google-photos-migrate">google-photos-migrate</a>
-        <ul>
-          <li><a href="#project-info">Project info</a></li>
-          <li><a href="#run-this-tool">Run this tool</a>
-            <ul>
-              <li><a href="#natively">Natively</a></li>
-              <li><a href="#docker">Docker</a></li>
-            </ul>
-          </li>
-          <li><a href="#further-steps">Further steps</a></li>
-          <li><a href="#development">Development</a>
-            <ul>
-              <li><a href="#build-instructions">Build instructions</a></li>
-              <li><a href="#watch-file-changes">Watch file changes</a></li>
-            </ul>
-          </li>
-        </ul>
-      </li>
-    </ul>
-  </div>
+- [Project info](#project-info)
+- [Run this tool](#run-this-tool)
+  - [Natively](#natively)
+  - [Docker](#docker)
+- [Further steps](#further-steps)
+- [Development](#development)
+  - [Build instructions](#build-instructions)
+  - [Watch file changes](#watch-file-changes)
+
 </details>
 
 ## Project info
