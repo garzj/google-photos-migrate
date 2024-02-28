@@ -1,5 +1,30 @@
 # google-photos-migrate
 
+<details>
+  <summary>Table of contents</summary>
+  
+  <div id="user-content-toc">
+    <ul>
+      <li href="#project-info">Project info</li>
+      <li href="#run-this-tool">Run this tool
+      <ul>
+        <li href="#natively">Natively</li>
+        <li href="#docker">Docker</li>
+        </ul>
+      </li>
+      <li href="#further-steps">Further steps</li>
+      <li href="#development">Development
+      <ul>
+        <li href="#build-instructions">Build instructions</li>
+        <li href="#watch-file-changes">Watch file changes</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</details>
+
+## Project info
+
 A tool like [google-photos-exif](https://github.com/mattwilson1024/google-photos-exif), but does some extra things:
 
 - uses the titles from the .json file to recover previous filenames
@@ -108,9 +133,11 @@ docker run --rm -it --security-opt=label=disable \
 
 ## Development
 
-**Prerec**: Must have node 18 & yarn installed.
+### Build instructions
 
-To test the app:
+**Prerec**: Must have [Node](https://nodejs.org/en/download) 18 & yarn installed.
+
+To build and run the app:
 
 ```bash
 git clone https://github.com/garzj/google-photos-migrate
@@ -120,6 +147,8 @@ yarn build
 yarn start <subcommand>
 ```
 
-The entrypoint of the cli is in `src/cli.ts` and library code should be exported from `src/index.ts`.
+### Watch file changes
 
-When using `yarn dev`, make sure to pass the `-f` flag to overwrite files after restarts.
+Use `yarn dev` to watch for file changes and make sure to pass the `-f` flag to overwrite migrated files after restarts.
+
+The entrypoint of the cli is in `src/cli.ts` and library code should be exported from `src/index.ts`.
