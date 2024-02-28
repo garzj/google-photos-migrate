@@ -78,6 +78,8 @@ export async function applyMetaFile(
       '-overwrite_original',
       '-api',
       'quicktimeutc',
+      '-api',
+      'largefilesupport=1',
     ]);
   } catch (e) {
     if (e instanceof Error) {
