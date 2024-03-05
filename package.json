@@ -35,7 +35,6 @@
     "cmd-ts": "^0.13.0",
     "exiftool-vendored": "^24.6.0",
     "fs-extra": "^11.2.0",
-    "glob": "^10.3.10",
     "sanitize-filename": "^1.6.3"
   },
   "resolutions": {

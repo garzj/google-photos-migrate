@@ -1,6 +1,5 @@
-import { glob } from 'glob';
 import { basename } from 'path';
-import { mkdir } from 'fs/promises';
+import { mkdir, readdir } from 'fs/promises';
 import { migrateDirFlatGen } from './migrate-flat';
 import { FullMigrationContext } from './migrate-full';
 import { untitledDirs } from '../config/langs';
@@ -48,18 +47,23 @@ export async function* restructureAndProcess(
   // $rootdir/AlbumsProcessed/My Album 2/*
   // $rootdir/PhotosProcessed/*
 
+  const allDirs = (await readdir(sourceDir, { withFileTypes: true })).filter(
+    (f) => f.isDirectory()
+  );
+
   // move the "Photos from $YEAR" directories to Photos/
   migCtx.log('Processing photos...');
-  const photoSet = new Set(
-    await glob([`${sourceDir}/Photos`, `${sourceDir}/Photos from */`])
+  const photosFromDirs = new Set(
+    allDirs
+      .filter((f) => f.name === 'Photos' || f.name.startsWith('Photos from '))
+      .map((f) => f.path)
   );
-  yield* _restructureAndProcess([...photoSet], false, migCtx);
+  yield* _restructureAndProcess([...photosFromDirs], false, migCtx);
 
   // move everythingg else to Albums/, so we end up with two top level folders
   migCtx.log('Processing albums...');
-  const fullSet: Set<string> = new Set(await glob(`${sourceDir}/*/`));
-  const everythingExceptPhotosDir = [
-    ...new Set([...fullSet].filter((x) => !photoSet.has(x))),
-  ];
-  yield* _restructureAndProcess(everythingExceptPhotosDir, true, migCtx);
+  const albumDirs = allDirs
+    .filter((x) => !photosFromDirs.has(x.path))
+    .map((x) => x.path);
+  yield* _restructureAndProcess(albumDirs, true, migCtx);
 }
