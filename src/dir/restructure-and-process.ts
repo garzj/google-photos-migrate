@@ -1,4 +1,4 @@
-import { basename } from 'path';
+import { basename, join } from 'path';
 import { mkdir, readdir } from 'fs/promises';
 import { migrateDirFlatGen } from './migrate-flat';
 import { FullMigrationContext } from './migrate-full';
@@ -56,14 +56,14 @@ export async function* restructureAndProcess(
   const photosFromDirs = new Set(
     allDirs
       .filter((f) => f.name === 'Photos' || f.name.startsWith('Photos from '))
-      .map((f) => f.path)
+      .map((f) => join(f.path, f.name))
   );
   yield* _restructureAndProcess([...photosFromDirs], false, migCtx);
 
   // move everythingg else to Albums/, so we end up with two top level folders
   migCtx.log('Processing albums...');
   const albumDirs = allDirs
-    .filter((x) => !photosFromDirs.has(x.path))
-    .map((x) => x.path);
+    .filter((f) => !photosFromDirs.has(join(f.path, f.name)))
+    .map((f) => join(f.path, f.name));
   yield* _restructureAndProcess(albumDirs, true, migCtx);
 }
