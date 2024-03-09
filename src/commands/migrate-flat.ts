@@ -5,6 +5,7 @@ import {
   errorDirArg,
   forceArg,
   timeoutArg,
+  verboseArg,
 } from './common';
 import { migrateDirFlatGen } from '../dir/migrate-flat';
 import { ExifTool } from 'exiftool-vendored';
@@ -28,8 +29,16 @@ export const migrateFlat = command({
     force: forceArg,
     timeout: timeoutArg,
     skipCorrections: skipCorrectionsArg,
+    verbose: verboseArg,
   },
-  handler: async ({ inputDir, outputDir, errorDir, force, timeout }) => {
+  handler: async ({
+    inputDir,
+    outputDir,
+    errorDir,
+    force,
+    timeout,
+    verbose,
+  }) => {
     const errs: string[] = [];
     const checkErrs = () => {
       if (errs.length !== 0) {
@@ -71,6 +80,7 @@ export const migrateFlat = command({
       errorDir,
       log: console.log,
       warnLog: console.error,
+      verboseLog: verbose ? console.log : undefined,
       exiftool: new ExifTool({ taskTimeoutMillis: timeout }),
       endExifTool: true,
     });

@@ -25,3 +25,9 @@ export const skipCorrectionsArg = flag({
   long: 'skip-corrections',
   description: 'Skips renaming wrong extensions identified by ExifTool.',
 });
+
+export const verboseArg = flag({
+  short: 'v',
+  long: 'verbose',
+  description: 'Enables verbose logging.',
+});

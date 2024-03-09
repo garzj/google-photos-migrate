@@ -5,6 +5,7 @@ import {
   errorDirArg,
   forceArg,
   timeoutArg,
+  verboseArg,
 } from './common';
 import { migrateDirFullGen } from '..';
 import { ExifTool } from 'exiftool-vendored';
@@ -29,6 +30,7 @@ export const migrateFull = command({
     force: forceArg,
     timeout: timeoutArg,
     skipCorrections: skipCorrectionsArg,
+    verbose: verboseArg,
   },
   handler: async ({
     inputDir,
@@ -37,6 +39,7 @@ export const migrateFull = command({
     force,
     timeout,
     skipCorrections,
+    verbose,
   }) => {
     const errs: string[] = [];
     const checkErrs = () => {
@@ -71,6 +74,7 @@ export const migrateFull = command({
       outputDir,
       log: console.log,
       warnLog: console.error,
+      verboseLog: verbose ? console.log : undefined,
       exiftool: new ExifTool({ taskTimeoutMillis: timeout }),
       endExifTool: true,
       skipCorrections,

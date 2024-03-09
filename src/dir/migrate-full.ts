@@ -36,6 +36,7 @@ export async function* migrateDirFullGen(
     yield new NoPhotosDirError(migCtx.inputDir);
     return;
   }
+  migCtx.verboseLog(`Found google photos directory: ${googlePhotosDir}`);
 
   yield* restructureAndProcess(googlePhotosDir, migCtx);
 
