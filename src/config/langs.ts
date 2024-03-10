@@ -4,6 +4,7 @@ export const editedSuffices = [
   'modifié',
   'düzenlendi',
   'измененный',
+  'ha editado',
 ];
 export const photosDirs = [
   'Google Photos',
