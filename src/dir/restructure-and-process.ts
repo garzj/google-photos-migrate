@@ -48,15 +48,8 @@ export async function* restructureAndProcess(
   // $rootdir/AlbumsProcessed/My Album 2/*
   // $rootdir/PhotosProcessed/*
 
-  const verboseLogFiles = (label: string, files: (Dirent | string)[]) =>
-    migCtx.verboseLog(
-      `${label}: ${files.map((f) => (typeof f === 'string' ? basename(f) : f.name)).join(', ')}`
-    );
-
   const dirents = await readdir(sourceDir, { withFileTypes: true });
-  verboseLogFiles('All entries', dirents);
   const allDirs = dirents.filter((f) => f.isDirectory());
-  verboseLogFiles('Only dirs', allDirs);
 
   // move the "Photos from $YEAR" directories to Photos/
   migCtx.log('Processing photos...');
@@ -65,7 +58,6 @@ export async function* restructureAndProcess(
       .filter((f) => f.name === 'Photos' || f.name.startsWith('Photos from '))
       .map((f) => join(f.path, f.name))
   );
-  verboseLogFiles('Photos from year dirs', [...photosFromDirs]);
   yield* _restructureAndProcess([...photosFromDirs], false, migCtx);
 
   // move everythingg else to Albums/, so we end up with two top level folders
@@ -73,6 +65,5 @@ export async function* restructureAndProcess(
   const albumDirs = allDirs
     .filter((f) => !photosFromDirs.has(join(f.path, f.name)))
     .map((f) => join(f.path, f.name));
-  verboseLogFiles('Album list', albumDirs);
   yield* _restructureAndProcess(albumDirs, true, migCtx);
 }
