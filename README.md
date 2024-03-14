@@ -32,7 +32,7 @@ A tool like [google-photos-exif](https://github.com/mattwilson1024/google-photos
 
 ### Natively
 
-**Prerec**: Must have at least node 18 & yarn installed.
+**Prerec**: Must have at least [Node.js](https://nodejs.org/en/download/current) 18 installed.
 
 #### Full structured migration
 
