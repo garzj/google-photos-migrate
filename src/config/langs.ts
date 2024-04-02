@@ -12,4 +12,10 @@ export const photosDirs = [
   'Google Fotoğraflar',
   'Google Фото',
 ];
-export const untitledDirs = ['Untitled', 'Unbenannt', 'Adsız', 'Без названия','Sin título'];
+export const untitledDirs = [
+  'Untitled', 
+  'Unbenannt', 
+  'Adsız', 
+  'Без названия',
+  'Sin título'
+];
