@@ -17,5 +17,5 @@ export const untitledDirs = [
   'Unbenannt', 
   'Adsız', 
   'Без названия',
-  'Sin título'
+  'Sin título',
 ];
