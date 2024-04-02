@@ -13,9 +13,9 @@ export const photosDirs = [
   'Google Фото',
 ];
 export const untitledDirs = [
-  'Untitled', 
-  'Unbenannt', 
-  'Adsız', 
+  'Untitled',
+  'Unbenannt',
+  'Adsız',
   'Без названия',
   'Sin título',
 ];
