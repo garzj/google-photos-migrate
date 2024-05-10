@@ -1,5 +1,5 @@
 import { basename, resolve } from 'path';
-import sanitize = require('sanitize-filename');
+import sanitize from 'sanitize-filename';
 import { copyFile, mkdir } from 'fs/promises';
 import { MigrationContext } from '../dir/migrate-flat';
 import { pathExists, move } from 'fs-extra';
