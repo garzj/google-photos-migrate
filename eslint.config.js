@@ -6,7 +6,7 @@ import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended'
 export default [
   {
     files: ['**/*.{js,ts,d.ts}'],
-    ignores: ['eslint.config.js', '.vscode/eslint-vsc.config.js'],
+    ignores: ['lib/**/*', 'eslint.config.js', '.vscode/eslint-vsc.config.js'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {

@@ -13,8 +13,8 @@
     "start": "node ./lib/cli.js",
     "deploy": "npm run build && npm start --",
     "dev": "dotenv -v NODE_ENV=development tsx watch --clear-screen=false ./src/cli.ts",
-    "lint": "prettier --check . && eslint './**/*.{ts,tsx}'",
-    "format": "prettier -w . && eslint --fix './**/*.{ts,tsx}'",
+    "lint": "prettier --check . && eslint",
+    "format": "prettier -w . && eslint --fix",
     "ncu": "ncu -u"
   },
   "author": "Johannes Garz <johannes@garz.dev> (https://garz.dev/)",
