@@ -1,17 +1,17 @@
-import { command, string, positional } from 'cmd-ts';
+import { command, positional, string } from 'cmd-ts';
+import { ExifTool } from 'exiftool-vendored';
+import { pathExists } from 'fs-extra';
+import { migrateDirFullGen } from '..';
+import { DirMigrationError } from '../dir/DirMigrationError';
 import { isEmptyDir } from '../fs/is-empty-dir';
+import { MediaMigrationError } from '../media/MediaMigrationError';
 import {
-  skipCorrectionsArg,
   errorDirArg,
   forceArg,
+  skipCorrectionsArg,
   timeoutArg,
   verboseArg,
 } from './common';
-import { migrateDirFullGen } from '..';
-import { ExifTool } from 'exiftool-vendored';
-import { MediaMigrationError } from '../media/MediaMigrationError';
-import { DirMigrationError } from '../dir/DirMigrationError';
-import { pathExists } from 'fs-extra';
 
 export const migrateFull = command({
   name: 'google-photos-migrate-full',
@@ -59,7 +59,7 @@ export const migrateFull = command({
 
     if (!force && !(await isEmptyDir(outputDir))) {
       errs.push(
-        `The target directory is not empty. Pass "-f" to force the operation.`
+        `The target directory is not empty. Pass "-f" to force the operation.`,
       );
     }
     if (await isEmptyDir(inputDir)) {

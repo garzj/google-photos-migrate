@@ -1,12 +1,12 @@
 import { readFile } from 'fs/promises';
-import { walkDir } from '../fs/walk-dir';
 import { extname } from 'path';
 import { editedSuffices } from '../config/langs';
+import { walkDir } from '../fs/walk-dir';
 
 const MAX_BASE_LENGTH = 51;
 
 export async function indexJsonFiles(
-  googleDir: string
+  googleDir: string,
 ): Promise<Map<string, string[]>> {
   const titleJsonMap = new Map<string, string[]>();
 

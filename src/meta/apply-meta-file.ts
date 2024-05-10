@@ -1,20 +1,20 @@
 import { WriteTags } from 'exiftool-vendored';
+import { readFile } from 'fs/promises';
+import { MigrationContext } from '../dir/migrate-flat';
 import { MediaFile } from '../media/MediaFile';
 import { exhaustiveCheck } from '../ts';
-import { MetaType } from './MetaType';
-import { readFile } from 'fs/promises';
 import { GoogleMetadata } from './GoogleMeta';
+import { MetaType } from './MetaType';
 import {
   ApplyMetaError,
   ExifToolError,
   MissingMetaError,
   WrongExtensionError,
 } from './apply-meta-errors';
-import { MigrationContext } from '../dir/migrate-flat';
 
 export async function applyMetaFile(
   mediaFile: MediaFile,
-  migCtx: MigrationContext
+  migCtx: MigrationContext,
 ): Promise<ApplyMetaError | null> {
   const metaJson = (await readFile(mediaFile.jsonPath)).toString();
   const meta: GoogleMetadata | undefined = JSON.parse(metaJson);
@@ -84,7 +84,7 @@ export async function applyMetaFile(
   } catch (e) {
     if (e instanceof Error) {
       const wrongExtMatch = e.message.match(
-        /Not a valid (?<current>\w+) \(looks more like a (?<actual>\w+)\)/
+        /Not a valid (?<current>\w+) \(looks more like a (?<actual>\w+)\)/,
       );
       const current = wrongExtMatch?.groups?.['current'];
       const actual = wrongExtMatch?.groups?.['actual'];
@@ -92,7 +92,7 @@ export async function applyMetaFile(
         return new WrongExtensionError(
           mediaFile,
           `.${current.toLowerCase()}`,
-          `.${actual.toLowerCase()}`
+          `.${actual.toLowerCase()}`,
         );
       }
       return new ExifToolError(mediaFile, e);

@@ -1,10 +1,10 @@
 import './config/env';
 
+import { supportedExtensions } from './config/extensions';
 import { migrateDirFlat, migrateDirFlatGen } from './dir/migrate-flat';
 import { migrateDirFull, migrateDirFullGen } from './dir/migrate-full';
-import type { MediaFileExtension } from './media/MediaFileExtension';
-import { supportedExtensions } from './config/extensions';
 import type { MigrationArgs } from './dir/migration-args';
+import type { MediaFileExtension } from './media/MediaFileExtension';
 
 export {
   migrateDirFlat,
@@ -13,4 +13,4 @@ export {
   migrateDirFullGen,
   supportedExtensions,
 };
-export type { MigrationArgs, MediaFileExtension };
+export type { MediaFileExtension, MigrationArgs };

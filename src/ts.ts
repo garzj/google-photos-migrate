@@ -12,6 +12,6 @@ export function asyncGenToAsync<
     for await (const result of f(...args)) {
       wg.push(result);
     }
-    return await Promise.all(wg);
+    return Promise.all(wg);
   };
 }

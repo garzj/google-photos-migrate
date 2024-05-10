@@ -14,7 +14,7 @@ export type MigrationArgs = {
 };
 
 export async function migrationArgsDefaults(
-  args: MigrationArgs
+  args: MigrationArgs,
 ): Promise<Required<MigrationArgs>> {
   return {
     ...args,

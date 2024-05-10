@@ -15,7 +15,7 @@ export class ApplyMetaError extends MediaMigrationError {
 export class ExifToolError extends ApplyMetaError {
   constructor(
     failedMedia: MediaFileInfo,
-    public reason: Error
+    public reason: Error,
   ) {
     super(failedMedia);
   }
@@ -32,7 +32,7 @@ export class WrongExtensionError extends ApplyMetaError {
   constructor(
     failedMedia: MediaFileInfo,
     public currentExt: string,
-    public actualExt: string
+    public actualExt: string,
   ) {
     super(failedMedia);
   }
@@ -45,7 +45,7 @@ export class WrongExtensionError extends ApplyMetaError {
 export class MissingMetaError extends ApplyMetaError {
   constructor(
     failedMedia: MediaFileInfo,
-    public keyName: keyof GoogleMetadata
+    public keyName: keyof GoogleMetadata,
   ) {
     super(failedMedia);
   }

@@ -1,19 +1,19 @@
+import { move, pathExists } from 'fs-extra';
+import { copyFile, mkdir } from 'fs/promises';
 import { basename, resolve } from 'path';
 import sanitize from 'sanitize-filename';
-import { copyFile, mkdir } from 'fs/promises';
 import { MigrationContext } from '../dir/migrate-flat';
-import { pathExists, move } from 'fs-extra';
 
 async function _saveToDir(
   file: string,
   destDir: string,
   saveBase: string,
   doMove = false,
-  duplicateIndex = 0
+  duplicateIndex = 0,
 ) {
   const saveDir = resolve(
     destDir,
-    duplicateIndex > 0 ? `duplicates-${duplicateIndex}` : '.'
+    duplicateIndex > 0 ? `duplicates-${duplicateIndex}` : '.',
   );
   await mkdir(saveDir, { recursive: true });
   const savePath = resolve(saveDir, saveBase);
@@ -39,7 +39,7 @@ export async function saveToDir(
   destDir: string,
   migCtx: MigrationContext,
   move = false,
-  saveBase?: string
+  saveBase?: string,
 ): Promise<string> {
   saveBase = saveBase ?? basename(file);
   const sanitized = sanitize(saveBase, { replacement: '_' });

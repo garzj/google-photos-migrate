@@ -1,14 +1,13 @@
-import { basename, join } from 'path';
 import { mkdir, readdir } from 'fs/promises';
+import { basename, join } from 'path';
+import { untitledDirs } from '../config/langs';
 import { migrateDirFlatGen } from './migrate-flat';
 import { FullMigrationContext } from './migrate-full';
-import { untitledDirs } from '../config/langs';
-import { Dirent } from 'fs';
 
 async function* _restructureAndProcess(
   folders: string[],
   processingAlbums: boolean, // true for Albums, false for Photos
-  migCtx: FullMigrationContext
+  migCtx: FullMigrationContext,
 ) {
   for (const folder of folders) {
     processingAlbums && migCtx.log(`Processing album ${folder}...`);
@@ -36,7 +35,7 @@ async function* _restructureAndProcess(
 
 export async function* restructureAndProcess(
   sourceDir: string,
-  migCtx: FullMigrationContext
+  migCtx: FullMigrationContext,
 ) {
   // before
   // $rootdir/My Album 1/*
@@ -56,7 +55,7 @@ export async function* restructureAndProcess(
   const photosFromDirs = new Set(
     allDirs
       .filter((f) => f.name === 'Photos' || f.name.startsWith('Photos from '))
-      .map((f) => join(f.path, f.name))
+      .map((f) => join(f.path, f.name)),
   );
   yield* _restructureAndProcess([...photosFromDirs], false, migCtx);
 

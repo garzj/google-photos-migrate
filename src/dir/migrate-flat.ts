@@ -1,10 +1,10 @@
 import { walkDir } from '../fs/walk-dir';
 import { MediaFile } from '../media/MediaFile';
-import { migrateMediaFile } from '../media/migrate-media-file';
-import { MigrationArgs, migrationArgsDefaults } from './migration-args';
-import { asyncGenToAsync } from '../ts';
-import { indexJsonFiles } from '../meta/index-meta-files';
 import { MediaMigrationError } from '../media/MediaMigrationError';
+import { migrateMediaFile } from '../media/migrate-media-file';
+import { indexJsonFiles } from '../meta/index-meta-files';
+import { asyncGenToAsync } from '../ts';
+import { MigrationArgs, migrationArgsDefaults } from './migration-args';
 
 export type MigrationContext = Required<MigrationArgs> & {
   titleJsonMap: Map<string, string[]>;
@@ -13,7 +13,7 @@ export type MigrationContext = Required<MigrationArgs> & {
 export const migrateDirFlat = asyncGenToAsync(migrateDirFlatGen);
 
 export async function* migrateDirFlatGen(
-  _args: MigrationArgs
+  _args: MigrationArgs,
 ): AsyncGenerator<MediaFile | MediaMigrationError> {
   const args = await migrationArgsDefaults(_args);
   const migCtx: MigrationContext = {

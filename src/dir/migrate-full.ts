@@ -1,19 +1,19 @@
-import { restructureAndProcess } from './restructure-and-process';
-import { photosDirs } from '../config/langs';
-import { asyncGenToAsync } from '../ts';
-import { MediaFile } from '../media/MediaFile';
-import { MigrationArgs, migrationArgsDefaults } from './migration-args';
-import { MediaMigrationError } from '../media/MediaMigrationError';
-import { DirMigrationError, NoPhotosDirError } from './DirMigrationError';
-import { basename } from 'path';
 import { pathExists } from 'fs-extra';
+import { basename } from 'path';
+import { photosDirs } from '../config/langs';
+import { MediaFile } from '../media/MediaFile';
+import { MediaMigrationError } from '../media/MediaMigrationError';
+import { asyncGenToAsync } from '../ts';
+import { DirMigrationError, NoPhotosDirError } from './DirMigrationError';
+import { MigrationArgs, migrationArgsDefaults } from './migration-args';
+import { restructureAndProcess } from './restructure-and-process';
 
 export type FullMigrationContext = Required<MigrationArgs>;
 
 export const migrateDirFull = asyncGenToAsync(migrateDirFullGen);
 
 export async function* migrateDirFullGen(
-  args: MigrationArgs
+  args: MigrationArgs,
 ): AsyncGenerator<MediaFile | MediaMigrationError | DirMigrationError> {
   const migCtx: FullMigrationContext = await migrationArgsDefaults(args);
 

@@ -1,8 +1,8 @@
-import { MetaType } from '../meta/MetaType';
 import {
   MediaFileAlias,
   MediaFileExtension,
 } from '../media/MediaFileExtension';
+import { MetaType } from '../meta/MetaType';
 
 // The extensions are identified by their suffix
 // A list of aliases will match each .<ext> with .<alias>.json
@@ -34,7 +34,7 @@ let extensions: MediaFileExtension[] = [
       metaType: MetaType.QUICKTIME,
       // Apple live photos
       aliases: ['.heic', '.jpg', '.jpeg'],
-    })
+    }),
   ),
   // Google live photos
   ...['.mp', '.mvimg'].map(
@@ -45,7 +45,7 @@ let extensions: MediaFileExtension[] = [
         { suffix: '.jpg', out: '.mp4' },
         { suffix: '.jpeg', out: '.mp4' },
       ],
-    })
+    }),
   ),
 ];
 

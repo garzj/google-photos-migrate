@@ -1,13 +1,13 @@
+import { pathExists } from 'fs-extra';
 import { basename, dirname } from 'path';
+import { editedSuffices } from '../config/langs';
 import { MigrationContext } from '../dir/migrate-flat';
 import { MediaFileExtension } from '../media/MediaFileExtension';
-import { editedSuffices } from '../config/langs';
-import { pathExists } from 'fs-extra';
 
 export async function findMetaFile(
   mediaPath: string,
   ext: MediaFileExtension,
-  migCtx: MigrationContext
+  migCtx: MigrationContext,
 ): Promise<string | null> {
   const title = basename(mediaPath);
 
@@ -15,7 +15,7 @@ export async function findMetaFile(
   const indexedJson = migCtx.titleJsonMap.get(title);
   if (indexedJson) {
     const sameFolder = indexedJson.filter(
-      (jsonPath) => dirname(jsonPath) === dirname(mediaPath)
+      (jsonPath) => dirname(jsonPath) === dirname(mediaPath),
     );
     if (sameFolder.length === 1) {
       return sameFolder[0];
@@ -63,7 +63,7 @@ export async function findMetaFile(
   potExts.push(ext.suffix);
   // <name>.<extAlias>.json
   potExts.push(
-    ...(ext.aliases ?? []).map((a) => (typeof a === 'string' ? a : a.suffix))
+    ...(ext.aliases ?? []).map((a) => (typeof a === 'string' ? a : a.suffix)),
   );
   // <name>.json
   potExts.push('');

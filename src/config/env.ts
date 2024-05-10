@@ -1,16 +1,14 @@
-try {
-  const dotenv = require('dotenv');
-  dotenv.config();
-} catch {}
-
-declare global {
-  namespace NodeJS {
-    interface ProcessEnv {
-      NODE_ENV: 'development' | 'production' | 'test';
-    }
-  }
+interface Env {
+  NODE_ENV: 'development' | 'production' | 'test';
 }
 
-process.env.NODE_ENV ??= 'production';
+const _env = {};
+try {
+  const dotenv = await import('dotenv');
+  dotenv.config({ processEnv: _env });
+} catch {}
+const env: Env = _env as Env;
 
-export {};
+env.NODE_ENV ??= 'production';
+
+export { env };

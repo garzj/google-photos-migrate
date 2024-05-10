@@ -1,19 +1,19 @@
 import { basename, dirname } from 'path';
+import { supportedExtensions } from '../config/extensions';
+import { MigrationContext } from '../dir/migrate-flat';
+import { NoMetaFileError } from '../meta/NoMetaFileError';
+import { ApplyMetaError, WrongExtensionError } from '../meta/apply-meta-errors';
+import { applyMetaFile } from '../meta/apply-meta-file';
 import { findMetaFile } from '../meta/find-meta-file';
+import { readMetaTitle } from '../meta/read-meta-title';
+import { InvalidExtError } from './InvalidExtError';
+import { MediaFile, MediaFileInfo } from './MediaFile';
 import {
   MediaFileAliasDetails,
   MediaFileExtension,
 } from './MediaFileExtension';
-import { MediaFile, MediaFileInfo } from './MediaFile';
-import { applyMetaFile } from '../meta/apply-meta-file';
-import { supportedExtensions } from '../config/extensions';
 import { MediaMigrationError } from './MediaMigrationError';
-import { InvalidExtError } from './InvalidExtError';
-import { NoMetaFileError } from '../meta/NoMetaFileError';
-import { ApplyMetaError, WrongExtensionError } from '../meta/apply-meta-errors';
-import { readMetaTitle } from '../meta/read-meta-title';
 import { saveToDir } from './save-to-dir';
-import { MigrationContext } from '../dir/migrate-flat';
 
 function applyExt(path: string, from: string, to: string) {
   return path.slice(0, path.length - from.length) + to;
@@ -23,7 +23,7 @@ async function renameExt(
   migCtx: MigrationContext,
   file: MediaFile,
   from: string,
-  to: string
+  to: string,
 ) {
   const destDir = dirname(file.path);
   const saveBase = applyExt(basename(file.path), from, to);
@@ -33,14 +33,14 @@ async function renameExt(
 
 function getOutExtRename(ext: MediaFileExtension, metaTitle: string) {
   const renames = (ext.aliases ?? []).filter(
-    (x): x is MediaFileAliasDetails => typeof x === 'object'
+    (x): x is MediaFileAliasDetails => typeof x === 'object',
   );
   return renames.find((r) => metaTitle.endsWith(r.suffix));
 }
 
 export async function migrateMediaFile(
   originalPath: string,
-  migCtx: MigrationContext
+  migCtx: MigrationContext,
 ): Promise<MediaFile | MediaMigrationError> {
   const mediaFileInfo: MediaFileInfo = {
     originalPath,
@@ -55,7 +55,7 @@ export async function migrateMediaFile(
         ? cur
         : longestMatch;
     },
-    null
+    null,
   );
   if (!ext) {
     mediaFileInfo.path = await saveToDir(originalPath, migCtx.errorDir, migCtx);
@@ -73,7 +73,7 @@ export async function migrateMediaFile(
     (await readMetaTitle(mediaFileInfo)) ?? basename(mediaFileInfo.path);
   const outExtRename = getOutExtRename(
     ext,
-    metaBase ?? basename(mediaFileInfo.path)
+    metaBase ?? basename(mediaFileInfo.path),
   );
   const outBase = outExtRename
     ? applyExt(metaBase, outExtRename.suffix, outExtRename.out)
@@ -83,7 +83,7 @@ export async function migrateMediaFile(
     migCtx.outputDir,
     migCtx,
     false,
-    outBase
+    outBase,
   );
   const mediaFile: MediaFile = {
     ...mediaFileInfo,
@@ -92,14 +92,14 @@ export async function migrateMediaFile(
   };
   const err = await applyMetaFile(mediaFile, migCtx);
 
-  return await handleApplyMetaErr(mediaFile, migCtx, err, outExtRename);
+  return handleApplyMetaErr(mediaFile, migCtx, err, outExtRename);
 }
 
 async function handleApplyMetaErr(
   mediaFile: MediaFile,
   migCtx: MigrationContext,
   err: ApplyMetaError | null,
-  outExtRename?: MediaFileAliasDetails
+  outExtRename?: MediaFileAliasDetails,
 ): Promise<MediaFile | ApplyMetaError> {
   if (err) {
     if (err instanceof WrongExtensionError) {
@@ -109,14 +109,14 @@ async function handleApplyMetaErr(
 
       if (outExtRename) {
         migCtx.warnLog(
-          `Extension ${err.currentExt} should be ${err.actualExt}, but was forcibly set: ${mediaFile.path}`
+          `Extension ${err.currentExt} should be ${err.actualExt}, but was forcibly set: ${mediaFile.path}`,
         );
         return mediaFile;
       }
 
       await renameExt(migCtx, mediaFile, err.currentExt, err.actualExt);
       migCtx.warnLog(
-        `Renamed wrong extension ${err.currentExt} to ${err.actualExt}: ${mediaFile.path}`
+        `Renamed wrong extension ${err.currentExt} to ${err.actualExt}: ${mediaFile.path}`,
       );
       err = await applyMetaFile(mediaFile, migCtx);
       if (!err) {
