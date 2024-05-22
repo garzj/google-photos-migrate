@@ -55,14 +55,14 @@ export async function* restructureAndProcess(
   const photosFromDirs = new Set(
     allDirs
       .filter((f) => f.name === 'Photos' || f.name.startsWith('Photos from '))
-      .map((f) => join(f.path, f.name)),
+      .map((f) => join(f.parentPath, f.name)),
   );
   yield* _restructureAndProcess([...photosFromDirs], false, migCtx);
 
   // move everythingg else to Albums/, so we end up with two top level folders
   migCtx.log('Processing albums...');
   const albumDirs = allDirs
-    .filter((f) => !photosFromDirs.has(join(f.path, f.name)))
-    .map((f) => join(f.path, f.name));
+    .filter((f) => !photosFromDirs.has(join(f.parentPath, f.name)))
+    .map((f) => join(f.parentPath, f.name));
   yield* _restructureAndProcess(albumDirs, true, migCtx);
 }
