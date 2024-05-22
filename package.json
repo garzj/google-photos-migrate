@@ -55,7 +55,7 @@
     "migrate"
   ],
   "files": [
-    "/{esm,cjs}/**/*.{js,d.ts}",
+    "/{esm,cjs}/**/*.{js,d.ts,json}",
     "/LICENSE",
     "/README.md"
   ],
