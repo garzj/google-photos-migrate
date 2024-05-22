@@ -2,15 +2,22 @@
   "name": "google-photos-migrate",
   "version": "2.5.1",
   "description": "A tool to fix EXIF data and recover filenames from a Google Photos takeout.",
-  "main": "./lib/index.js",
+  "types": "./esm/index.d.ts",
   "bin": {
-    "google-photos-migrate": "./lib/cli.js"
+    "google-photos-migrate": "./esm/cli.js"
   },
   "type": "module",
+  "exports": {
+    "require": "./cjs/index.js",
+    "import": "./esm/index.js"
+  },
+  "main": "./cjs/index.js",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "build": "tsc && tsc-alias",
-    "start": "node ./lib/cli.js",
+    "build": "yarn build:esm && yarn build:cjs",
+    "build:esm": "tsc --module es2022 -d && tsc-alias",
+    "build:cjs": "tsc --module commonjs --outDir cjs && echo '{\"type\": \"commonjs\"}' > cjs/package.json",
+    "start": "node ./esm/cli.js",
     "deploy": "npm run build && npm start --",
     "dev": "dotenv -v NODE_ENV=development tsx watch --clear-screen=false ./src/cli.ts",
     "lint": "prettier --check . && eslint",
@@ -49,8 +56,7 @@
     "migrate"
   ],
   "files": [
-    "/lib/**/*.js",
-    "/lib/**/*.d.ts",
+    "/{esm,cjs}/**/*.{js,d.ts}",
     "/LICENSE",
     "/README.md"
   ],

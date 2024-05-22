@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "./lib",
-    "declaration": true,
+    "outDir": "esm",
     "module": "ES2022",
     "moduleResolution": "node",
     "target": "ES2022",
