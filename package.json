@@ -1,6 +1,6 @@
 {
   "name": "google-photos-migrate",
-  "version": "2.5.1",
+  "version": "2.6.0",
   "description": "A tool to fix EXIF data and recover filenames from a Google Photos takeout.",
   "types": "./esm/index.d.ts",
   "bin": {
