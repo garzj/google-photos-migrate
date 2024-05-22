@@ -7,8 +7,12 @@
   },
   "type": "module",
   "exports": {
-    "require": "./cjs/index.js",
-    "import": "./esm/index.js"
+    ".": {
+      "import": "./esm/index.js",
+      "require": "./cjs/index.js",
+      "default": "./esm/index.js"
+    },
+    "./*": "./*.js"
   },
   "main": "./cjs/index.js",
   "scripts": {
