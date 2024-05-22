@@ -4,8 +4,11 @@ import { supportedExtensions } from './config/extensions';
 import { migrateDirFlat, migrateDirFlatGen } from './dir/migrate-flat';
 import { migrateDirFull, migrateDirFullGen } from './dir/migrate-full';
 import type { MigrationArgs } from './dir/migration-args';
-import type { MediaFileExtension } from './media/MediaFileExtension';
 
+export type * from './errors';
+export type * from './media/MediaFile';
+export type * from './media/MediaFileExtension';
+export type * from './meta/GoogleMeta';
 export {
   migrateDirFlat,
   migrateDirFlatGen,
@@ -13,4 +16,4 @@ export {
   migrateDirFullGen,
   supportedExtensions,
 };
-export type { MediaFileExtension, MigrationArgs };
+export type { MigrationArgs };

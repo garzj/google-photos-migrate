@@ -4,14 +4,14 @@ export interface GoogleMetadata {
   description?: string;
   imageViews?: string;
   creationTime?: GoogleTimestamp;
-  geoData?: GeoData;
-  geoDataExif?: GeoData;
+  geoData?: GoogleGeoData;
+  geoDataExif?: GoogleGeoData;
   photoTakenTime?: GoogleTimestamp;
   modificationTime?: GoogleTimestamp;
   favorited?: boolean;
 }
 
-interface GeoData {
+export interface GoogleGeoData {
   latitude?: number;
   longitude?: number;
   altitude?: number;
@@ -19,7 +19,7 @@ interface GeoData {
   longitudeSpan?: number;
 }
 
-interface GoogleTimestamp {
+export interface GoogleTimestamp {
   timestamp?: string;
   formatted?: string;
 }
