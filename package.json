@@ -2,7 +2,6 @@
   "name": "google-photos-migrate",
   "version": "2.6.0",
   "description": "A tool to fix EXIF data and recover filenames from a Google Photos takeout.",
-  "types": "./esm/index.d.ts",
   "bin": {
     "google-photos-migrate": "./esm/cli.js"
   },
@@ -15,7 +14,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "build": "yarn build:esm && yarn build:cjs",
-    "build:esm": "tsc --module es2022 -d && tsc-alias",
+    "build:esm": "tsc --module es2022 && tsc-alias",
     "build:cjs": "tsc --module commonjs --outDir cjs && echo '{\"type\": \"commonjs\"}' > cjs/package.json",
     "start": "node ./esm/cli.js",
     "deploy": "npm run build:esm && npm start --",
