@@ -18,7 +18,7 @@
     "build:esm": "tsc --module es2022 -d && tsc-alias",
     "build:cjs": "tsc --module commonjs --outDir cjs && echo '{\"type\": \"commonjs\"}' > cjs/package.json",
     "start": "node ./esm/cli.js",
-    "deploy": "npm run build && npm start --",
+    "deploy": "npm run build:esm && npm start --",
     "dev": "dotenv -v NODE_ENV=development tsx watch --clear-screen=false ./src/cli.ts",
     "lint": "prettier --check . && eslint",
     "format": "prettier -w . && eslint --fix",
