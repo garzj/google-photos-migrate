@@ -1,10 +1,10 @@
 import { pathExists } from 'fs-extra';
 import { basename } from 'path';
+import { MigrationError } from '../MigrationError';
 import { photosDirs } from '../config/langs';
 import { MediaFile } from '../media/MediaFile';
-import { MediaMigrationError } from '../media/MediaMigrationError';
 import { asyncGenToAsync } from '../ts';
-import { DirMigrationError, NoPhotosDirError } from './DirMigrationError';
+import { NoPhotosDirError } from './NoPhotosDirError';
 import { MigrationArgs, migrationArgsDefaults } from './migration-args';
 import { restructureAndProcess } from './restructure-and-process';
 
@@ -14,14 +14,11 @@ export const migrateDirFull = asyncGenToAsync(migrateDirFullGen);
 
 export async function* migrateDirFullGen(
   args: MigrationArgs,
-): AsyncGenerator<MediaFile | MediaMigrationError | DirMigrationError> {
+): AsyncGenerator<MediaFile | MigrationError> {
   const migCtx: FullMigrationContext = await migrationArgsDefaults(args);
 
-  // at least in my takeout, the Takeout folder contains a subfolder
-  // Takeout/Google Foto
-  // rootdir refers to that subfolder
-  // Can add more language support here in the future
-  let googlePhotosDir: string = '';
+  // Either /Google Photos or Takeout/Google Photos
+  let googlePhotosDir: string | undefined = undefined;
   for (const photosDir of photosDirs) {
     if (await pathExists(`${migCtx.inputDir}/${photosDir}`)) {
       googlePhotosDir = `${migCtx.inputDir}/${photosDir}`;
@@ -32,7 +29,7 @@ export async function* migrateDirFullGen(
       break;
     }
   }
-  if (googlePhotosDir == '') {
+  if (!googlePhotosDir) {
     yield new NoPhotosDirError(migCtx.inputDir);
     return;
   }

@@ -2,7 +2,7 @@ import { command, positional, string } from 'cmd-ts';
 import { ExifTool } from 'exiftool-vendored';
 import { pathExists } from 'fs-extra';
 import { migrateDirFullGen } from '..';
-import { DirMigrationError } from '../dir/DirMigrationError';
+import { NoPhotosDirError } from '../dir/NoPhotosDirError';
 import { isEmptyDir } from '../fs/is-empty-dir';
 import { MediaMigrationError } from '../media/MediaMigrationError';
 import {
@@ -81,7 +81,7 @@ export const migrateFull = command({
     });
     const counts = { err: 0, suc: 0 };
     for await (const result of migGen) {
-      if (result instanceof DirMigrationError) {
+      if (result instanceof NoPhotosDirError) {
         console.error(`Error: ${result}`);
         process.exit(1);
       }

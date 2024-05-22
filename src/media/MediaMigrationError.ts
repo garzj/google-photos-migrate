@@ -1,6 +1,7 @@
+import { MigrationError } from '../MigrationError';
 import { MediaFileInfo } from './MediaFile';
 
-export class MediaMigrationError extends Error {
+export abstract class MediaMigrationError extends MigrationError {
   constructor(public failedMedia: MediaFileInfo) {
     super();
   }
