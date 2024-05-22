@@ -4,7 +4,8 @@ interface Env {
 
 const _env = {};
 try {
-  const dotenv = await import('dotenv');
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const dotenv = require('dotenv');
   dotenv.config({ processEnv: _env });
 } catch {}
 const env: Env = _env as Env;
