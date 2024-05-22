@@ -2,15 +2,7 @@ interface Env {
   NODE_ENV: 'development' | 'production' | 'test';
 }
 
-const _env = {};
-if (require.main === module) {
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const dotenv = require('dotenv');
-    dotenv.config({ processEnv: _env });
-  } catch {}
-}
-const env: Env = _env as Env;
+const env: Env = process.env as object as Env;
 
 env.NODE_ENV ??= 'production';
 
