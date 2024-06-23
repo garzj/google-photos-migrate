@@ -44,7 +44,7 @@ export async function saveToDir(
   saveBase = saveBase ?? basename(file);
   let sanitized = sanitize(saveBase, { replacement: '_' });
   if (sanitized === '') {
-    sanitized = '_';
+    sanitized = migCtx.renameEmpty;
   }
   if (saveBase != sanitized) {
     migCtx.warnLog(`Sanitized file: ${file}` + ` (New filename: ${sanitized})`);
