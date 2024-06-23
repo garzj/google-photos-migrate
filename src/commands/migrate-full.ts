@@ -5,13 +5,7 @@ import { migrateDirFullGen } from '..';
 import { NoPhotosDirError } from '../dir/NoPhotosDirError';
 import { isEmptyDir } from '../fs/is-empty-dir';
 import { MediaMigrationError } from '../media/MediaMigrationError';
-import {
-  errorDirArg,
-  forceArg,
-  skipCorrectionsArg,
-  timeoutArg,
-  verboseArg,
-} from './common';
+import { commonArgs } from './common';
 
 export const migrateFull = command({
   name: 'google-photos-migrate-full',
@@ -26,11 +20,7 @@ export const migrateFull = command({
       displayName: 'output_dir',
       description: 'The path where you want the processed directories to go.',
     }),
-    errorDir: errorDirArg,
-    force: forceArg,
-    timeout: timeoutArg,
-    skipCorrections: skipCorrectionsArg,
-    verbose: verboseArg,
+    ...commonArgs,
   },
   handler: async ({
     inputDir,
@@ -39,6 +29,7 @@ export const migrateFull = command({
     force,
     timeout,
     skipCorrections,
+    renameEmpty,
     verbose,
   }) => {
     const errs: string[] = [];
@@ -78,6 +69,7 @@ export const migrateFull = command({
       exiftool: new ExifTool({ taskTimeoutMillis: timeout }),
       endExifTool: true,
       skipCorrections,
+      renameEmpty,
     });
     const counts = { err: 0, suc: 0 };
     for await (const result of migGen) {

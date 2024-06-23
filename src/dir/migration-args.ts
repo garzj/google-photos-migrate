@@ -10,6 +10,7 @@ export type MigrationArgs = {
   exiftool?: ExifTool;
   endExifTool?: boolean;
   skipCorrections?: boolean;
+  renameEmpty?: string;
   migrationLocks?: Map<string, Promise<string>>;
 };
 
@@ -25,5 +26,6 @@ export async function migrationArgsDefaults(
     warnLog: args.warnLog ?? (() => {}),
     verboseLog: args.verboseLog ?? (() => {}),
     skipCorrections: args.skipCorrections ?? false,
+    renameEmpty: args.renameEmpty ? args.renameEmpty : '_',
   };
 }

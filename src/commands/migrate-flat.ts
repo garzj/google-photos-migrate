@@ -4,13 +4,7 @@ import { pathExists } from 'fs-extra';
 import { migrateDirFlatGen } from '../dir/migrate-flat';
 import { isEmptyDir } from '../fs/is-empty-dir';
 import { MediaMigrationError } from '../media/MediaMigrationError';
-import {
-  errorDirArg,
-  forceArg,
-  skipCorrectionsArg,
-  timeoutArg,
-  verboseArg,
-} from './common';
+import { commonArgs } from './common';
 
 export const migrateFlat = command({
   name: 'google-photos-migrate-flat',
@@ -25,11 +19,7 @@ export const migrateFlat = command({
       displayName: 'output_dir',
       description: 'The path to your flat output directory.',
     }),
-    errorDir: errorDirArg,
-    force: forceArg,
-    timeout: timeoutArg,
-    skipCorrections: skipCorrectionsArg,
-    verbose: verboseArg,
+    ...commonArgs,
   },
   handler: async ({
     inputDir,
@@ -37,6 +27,8 @@ export const migrateFlat = command({
     errorDir,
     force,
     timeout,
+    skipCorrections,
+    renameEmpty,
     verbose,
   }) => {
     const errs: string[] = [];
@@ -83,6 +75,8 @@ export const migrateFlat = command({
       verboseLog: verbose ? console.log : undefined,
       exiftool: new ExifTool({ taskTimeoutMillis: timeout }),
       endExifTool: true,
+      skipCorrections,
+      renameEmpty,
     });
     const counts = { err: 0, suc: 0 };
     for await (const result of migGen) {
