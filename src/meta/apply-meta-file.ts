@@ -1,6 +1,5 @@
 import { WriteTags } from 'exiftool-vendored';
-import { readFile } from 'fs/promises';
-import { utimes } from 'fs/promises';
+import { readFile, utimes } from 'fs/promises';
 import { MigrationContext } from '../dir/migrate-flat';
 import { MediaFile } from '../media/MediaFile';
 import { exhaustiveCheck } from '../ts';
