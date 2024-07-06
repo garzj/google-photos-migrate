@@ -1,5 +1,5 @@
 import { WriteTags } from 'exiftool-vendored';
-import { readFile } from 'fs/promises';
+import { readFile, utimes } from 'fs/promises';
 import { MigrationContext } from '../dir/migrate-flat';
 import { MediaFile } from '../media/MediaFile';
 import { exhaustiveCheck } from '../ts';
@@ -81,6 +81,9 @@ export async function applyMetaFile(
       '-api',
       'largefilesupport=1',
     ]);
+
+    // Set file modification times to the photo taken timestamp
+    await utimes(mediaFile.path, timeTaken, timeTaken);
   } catch (e) {
     if (e instanceof Error) {
       const wrongExtMatch = e.message.match(
