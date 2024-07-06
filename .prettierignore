@@ -10,6 +10,8 @@ android-dups/
 /error/
 
 # Build
+/cjs/
+/esm/
 /lib/
 /build/
 
