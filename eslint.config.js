@@ -30,6 +30,7 @@ export default [
       ...ts.configs['eslint-recommended'].rules,
       ...ts.configs['recommended'].rules,
       '@typescript-eslint/no-unused-vars': 0,
+      '@typescript-eslint/no-unused-expressions': 0,
       '@typescript-eslint/no-explicit-any': 0,
       '@typescript-eslint/explicit-function-return-type': 0,
       '@typescript-eslint/no-empty-function': 0,
