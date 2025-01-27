@@ -74,13 +74,9 @@ export async function applyMetaFile(
   }
 
   try {
-    await migCtx.exiftool.write(mediaFile.path, tags, [
-      '-overwrite_original',
-      '-api',
-      'quicktimeutc',
-      '-api',
-      'largefilesupport=1',
-    ]);
+    await migCtx.exiftool.write(mediaFile.path, tags, {
+      writeArgs: migCtx.exiftoolArgs,
+    });
 
     // Set file modification times to the photo taken timestamp
     await utimes(mediaFile.path, timeTaken, timeTaken);

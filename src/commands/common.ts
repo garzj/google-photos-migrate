@@ -1,4 +1,12 @@
-import { flag, number, option, positional, string } from 'cmd-ts';
+import {
+  array,
+  flag,
+  multioption,
+  number,
+  option,
+  positional,
+  string,
+} from 'cmd-ts';
 import { ArgParser } from 'cmd-ts/dist/cjs/argparser';
 import { ProvidesHelp } from 'cmd-ts/dist/cjs/helpdoc';
 
@@ -37,5 +45,11 @@ export const commonArgs = {
     defaultValue: () => '_',
     long: 'rename-empty',
     description: 'Use this name for empty filenames.',
+  }),
+  exiftoolArgs: multioption({
+    type: array(string),
+    short: 'e',
+    long: 'exiftool-arg',
+    description: '',
   }),
 } satisfies ArgTypes;
