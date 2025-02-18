@@ -1,5 +1,5 @@
 import { pathExists } from 'fs-extra';
-import { basename } from 'path';
+import { basename, join } from 'path';
 import { MigrationError } from '../MigrationError';
 import { photosDirs } from '../config/langs';
 import { MediaFile } from '../media/MediaFile';
@@ -20,8 +20,9 @@ export async function* migrateDirFullGen(
   // Either /Google Photos or Takeout/Google Photos
   let googlePhotosDir: string | undefined = undefined;
   for (const photosDir of photosDirs) {
-    if (await pathExists(`${migCtx.inputDir}/${photosDir}`)) {
-      googlePhotosDir = `${migCtx.inputDir}/${photosDir}`;
+    const subdir = join(migCtx.inputDir, photosDir);
+    if (await pathExists(subdir)) {
+      googlePhotosDir = subdir;
       break;
     }
     if (basename(migCtx.inputDir) === photosDir) {
