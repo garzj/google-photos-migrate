@@ -23,7 +23,7 @@ A tool like [google-photos-exif](https://github.com/mattwilson1024/google-photos
 - tries to match files by the title in their .json file
 - fixes wrong extensions, identified by [ExifTool](https://exiftool.org/) (or use `--skip-corrections`)
 - video files won't show up as from 1970
-- works for English, German, French, Turkish, Russian, Spanish and Simplified Chinese (for more langs fix [this file](./src/config/langs.ts))
+- works for English, German, French, Turkish, Russian, Spanish, Finnish and Simplified Chinese (for more langs fix [this file](./src/config/langs.ts))
 - supported extensions can be found and configured in [extensions.ts](./src/config/extensions.ts)
 
 ## Run this tool
