@@ -31,26 +31,30 @@
   "license": "MIT",
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
-    "@types/node": "^22.13.13",
-    "@typescript-eslint/eslint-plugin": "^8.28.0",
-    "@typescript-eslint/parser": "^8.28.0",
+    "@types/node": "^22.14.1",
+    "@typescript-eslint/eslint-plugin": "^8.30.1",
+    "@typescript-eslint/parser": "^8.30.1",
     "dotenv-cli": "^8.0.0",
-    "eslint": "^9.23.0",
-    "eslint-config-prettier": "^10.1.1",
+    "eslint": "^9.25.0",
+    "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-only-warn": "^1.1.0",
-    "eslint-plugin-prettier": "^5.2.5",
-    "npm-check-updates": "^17.1.16",
+    "eslint-plugin-prettier": "^5.2.6",
+    "npm-check-updates": "^17.1.18",
     "prettier": "^3.5.3",
     "prettier-plugin-organize-imports": "^4.1.0",
-    "tsc-alias": "^1.8.11",
+    "tsc-alias": "^1.8.15",
     "tsx": "^4.19.3",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.3"
   },
   "dependencies": {
     "cmd-ts": "^0.13.0",
-    "exiftool-vendored": "^29.2.0",
+    "exiftool-vendored": "^29.3.0",
     "fs-extra": "^11.3.0",
     "sanitize-filename": "^1.6.3"
+  },
+  "resolutions": {
+    "micromatch": "4.0.8",
+    "braces": "3.0.3"
   },
   "keywords": [
     "google",
