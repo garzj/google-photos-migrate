@@ -8,7 +8,7 @@ storage_dir = "./storage"
 data_dir = "../output"
 
 extensions = [
-    ".jpg", ".jpeg", ".png", ".raw", ".ico", ".tiff", ".webp", ".heic",
+    ".jpg", ".jpeg", ".png", ".raw", ".ico", ".tif", ".tiff", ".webp", ".heic",
     ".heif", ".gif", ".mp4", ".mov", ".qt", ".mov.qt", ".mkv", ".wmv", ".webm"
 ]
 
