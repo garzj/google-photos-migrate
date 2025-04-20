@@ -16,6 +16,7 @@ let extensions: MediaFileExtension[] = [
   { suffix: '.raw', metaType: MetaType.EXIF }, // could be TIFF
   { suffix: '.dng', metaType: MetaType.EXIF }, // based on TIFF
   { suffix: '.ico', metaType: MetaType.NONE },
+  { suffix: '.tif', metaType: MetaType.EXIF },
   { suffix: '.tiff', metaType: MetaType.EXIF },
   { suffix: '.webp', metaType: MetaType.EXIF }, // based on RIFF
   { suffix: '.heic', metaType: MetaType.QUICKTIME },
