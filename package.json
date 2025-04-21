@@ -39,7 +39,7 @@
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-only-warn": "^1.1.0",
     "eslint-plugin-prettier": "^5.2.6",
-    "npm-check-updates": "^17.1.18",
+    "npm-check-updates": "^18.0.0",
     "prettier": "^3.5.3",
     "prettier-plugin-organize-imports": "^4.1.0",
     "tsc-alias": "^1.8.15",

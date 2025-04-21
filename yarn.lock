@@ -1101,10 +1101,10 @@ normalize-path@^3.0.0, normalize-path@~3.0.0:
   resolved "https://registry.yarnpkg.com/normalize-path/-/normalize-path-3.0.0.tgz#0dcd69ff23a1c9b11fd0978316644a0388216a65"
   integrity sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==
 
-npm-check-updates@^17.1.18:
-  version "17.1.18"
-  resolved "https://registry.yarnpkg.com/npm-check-updates/-/npm-check-updates-17.1.18.tgz#b26e5a6bb5f2b32af5950cda7ea40aafaf92e2cc"
-  integrity sha512-bkUy2g4v1i+3FeUf5fXMLbxmV95eG4/sS7lYE32GrUeVgQRfQEk39gpskksFunyaxQgTIdrvYbnuNbO/pSUSqw==
+npm-check-updates@^18.0.0:
+  version "18.0.0"
+  resolved "https://registry.yarnpkg.com/npm-check-updates/-/npm-check-updates-18.0.0.tgz#54bed591a50f4d29de16b4ea591d103a2387c46a"
+  integrity sha512-ymh9KF/xcGypQuCr5NQw1pAMRh5mHnQQDgHwM8gQBG8siG9XAKvcP9OtoARxFRgOjzEfjD6YtU/7KB2jJqGGlQ==
 
 optionator@^0.9.3:
   version "0.9.3"
